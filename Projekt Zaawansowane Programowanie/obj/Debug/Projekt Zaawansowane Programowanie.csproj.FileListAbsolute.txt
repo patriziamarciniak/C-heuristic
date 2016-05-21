@@ -1,0 +1,9 @@
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.exe.config
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.exe
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.pdb
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csprojResolveAssemblyReference.cache
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.Form1.resources
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.Properties.Resources.resources
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.GenerateResource.Cache
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.exe
+c:\users\hp\documents\visual studio 2015\Projects\Projekt Zaawansowane Programowanie\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.pdb
