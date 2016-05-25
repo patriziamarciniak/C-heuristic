@@ -33,6 +33,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.panel1 = new System.Windows.Forms.Panel();
             this.dataGridViewInput = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnUserInstance = new System.Windows.Forms.Button();
             this.buttonGenerateErrors = new System.Windows.Forms.Button();
             this.buttonGenerateInstance = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -42,6 +43,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.comboBoxPlaces = new System.Windows.Forms.ComboBox();
             this.comboBoxSamples = new System.Windows.Forms.ComboBox();
             this.console = new System.Windows.Forms.TextBox();
+            this.btnHelp = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).BeginInit();
             this.panel2.SuspendLayout();
@@ -66,6 +68,8 @@ namespace Projekt_Zaawansowane_Programowanie
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Olive;
+            this.panel2.Controls.Add(this.btnHelp);
+            this.panel2.Controls.Add(this.btnUserInstance);
             this.panel2.Controls.Add(this.buttonGenerateErrors);
             this.panel2.Controls.Add(this.buttonGenerateInstance);
             this.panel2.Controls.Add(this.label2);
@@ -79,6 +83,25 @@ namespace Projekt_Zaawansowane_Programowanie
             this.panel2.Size = new System.Drawing.Size(660, 211);
             this.panel2.TabIndex = 1;
             // 
+            // btnUserInstance
+            // 
+            this.btnUserInstance.AutoSize = true;
+            this.btnUserInstance.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnUserInstance.BackColor = System.Drawing.Color.Goldenrod;
+            this.btnUserInstance.FlatAppearance.BorderColor = System.Drawing.Color.Goldenrod;
+            this.btnUserInstance.FlatAppearance.BorderSize = 2;
+            this.btnUserInstance.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnUserInstance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnUserInstance.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
+            this.btnUserInstance.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnUserInstance.Location = new System.Drawing.Point(190, 126);
+            this.btnUserInstance.Name = "btnUserInstance";
+            this.btnUserInstance.Size = new System.Drawing.Size(113, 28);
+            this.btnUserInstance.TabIndex = 8;
+            this.btnUserInstance.Text = "Moja instancja";
+            this.btnUserInstance.UseVisualStyleBackColor = false;
+            this.btnUserInstance.Click += new System.EventHandler(this.button1_Click);
+            // 
             // buttonGenerateErrors
             // 
             this.buttonGenerateErrors.AutoSize = true;
@@ -90,7 +113,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.buttonGenerateErrors.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGenerateErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.buttonGenerateErrors.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonGenerateErrors.Location = new System.Drawing.Point(393, 126);
+            this.buttonGenerateErrors.Location = new System.Drawing.Point(460, 126);
             this.buttonGenerateErrors.Name = "buttonGenerateErrors";
             this.buttonGenerateErrors.Size = new System.Drawing.Size(108, 28);
             this.buttonGenerateErrors.TabIndex = 7;
@@ -109,7 +132,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.buttonGenerateInstance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGenerateInstance.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.buttonGenerateInstance.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonGenerateInstance.Location = new System.Drawing.Point(121, 126);
+            this.buttonGenerateInstance.Location = new System.Drawing.Point(19, 126);
             this.buttonGenerateInstance.Name = "buttonGenerateInstance";
             this.buttonGenerateInstance.Size = new System.Drawing.Size(132, 28);
             this.buttonGenerateInstance.TabIndex = 6;
@@ -182,6 +205,25 @@ namespace Projekt_Zaawansowane_Programowanie
             this.console.Size = new System.Drawing.Size(659, 46);
             this.console.TabIndex = 2;
             // 
+            // btnHelp
+            // 
+            this.btnHelp.AutoSize = true;
+            this.btnHelp.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnHelp.BackColor = System.Drawing.Color.Goldenrod;
+            this.btnHelp.FlatAppearance.BorderColor = System.Drawing.Color.Goldenrod;
+            this.btnHelp.FlatAppearance.BorderSize = 2;
+            this.btnHelp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
+            this.btnHelp.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnHelp.Location = new System.Drawing.Point(325, 126);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(55, 28);
+            this.btnHelp.TabIndex = 9;
+            this.btnHelp.Text = "Swap";
+            this.btnHelp.UseVisualStyleBackColor = false;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -216,6 +258,8 @@ namespace Projekt_Zaawansowane_Programowanie
         private System.Windows.Forms.Button buttonGenerateInstance;
         private System.Windows.Forms.Button buttonGenerateErrors;
         private System.Windows.Forms.TextBox console;
+        private System.Windows.Forms.Button btnUserInstance;
+        private System.Windows.Forms.Button btnHelp;
     }
 }
 
