@@ -39,7 +39,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 this.comboBoxPlaces.Items.Add(i);
             };
             comboBoxPlaces.SelectedIndex = 9;
-            comboBoxSamples.SelectedIndex = 19;
+            comboBoxSamples.SelectedIndex = 0;
             comboBoxErrors.SelectedIndex = 5;
             comboBoxLevel.SelectedIndex = 1;
         }
@@ -163,12 +163,7 @@ namespace Projekt_Zaawansowane_Programowanie
                     errorsList.Add(new Tuple<int, int>(row, col));
                 }
             }
-            /*
-            foreach (var i in errorsList)
-            {
-                console.Text = console.Text + i.Item1.ToString() + i.Item2.ToString() + " || ";
-            }
-            */
+
             return errorsList;
         }
 
@@ -204,7 +199,6 @@ namespace Projekt_Zaawansowane_Programowanie
                     DTable.Rows[i][Convert.ToString(b)] = o;
                 }
             }
-            Debug.WriteLine(Convert.ToString(a), Convert.ToString(b));
             DTable.Columns[Convert.ToString(b)].ColumnName = "h";
             DTable.Columns[Convert.ToString(a)].ColumnName = Convert.ToString(b);
             DTable.Columns["h"].ColumnName = Convert.ToString(a);
@@ -213,7 +207,7 @@ namespace Projekt_Zaawansowane_Programowanie
         public void shuffle()
         {
             Random r = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 5; i++)
             {
                 int a = r.Next(0, DTable.Columns.Count);
                 int b = r.Next(0, DTable.Columns.Count);
@@ -222,26 +216,6 @@ namespace Projekt_Zaawansowane_Programowanie
                     swapColumn(a, b);
                 }
         }
-            /*
-            int[] deck = new int[DTable.Columns.Count];
-            for (int i = 0; i < DTable.Columns.Count; i++) {
-                deck[i] = i;
-                console.Text = console.Text + Convert.ToString(deck[i]);
-            }
-            Random r = new Random();
-            for (int n = deck.Length - 1; n > 0; --n)
-            {
-                int k = r.Next(n + 1);
-                int temp = deck[n];
-                deck[n] = deck[k];
-                deck[k] = temp;
-            }
-            console.Text = console.Text + ":::";
-            for (int i = 0; i < DTable.Columns.Count; i++)
-            {
-                console.Text = console.Text + deck[i].ToString();
-            }
-            */
         }
 
         private void saveToFile()
@@ -291,21 +265,73 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void countScore()
         {
-            int score;
-            int[] row = new int[DTable.Columns.Count]; 
+            int score, start, end;
+            Boolean flag = false;
+            List<int> row = new List<int>();
+            List<int> subset = new List<int>();
 
             for (int i = 0; i < DTable.Rows.Count; i++)
             {
                 for (int ii = 0; ii < DTable.Columns.Count; ii++)
                 {
-                    row[ii] = Convert.ToInt32(DTable.Rows[i][ii]);
-//                    Debug.WriteLine(Convert.ToString(row[ii]));
+                    row.Add(Convert.ToInt32(DTable.Rows[i][ii]));
                 }
+                start = row.FindIndex(item => item == 1);
+                end = row.FindLastIndex(item => item == 1);
+                subset = row.GetRange(start, end - start + 1);
 
+               countScoreHelper(subset);
+
+                row.Clear();
+                subset.Clear();
             }
-            
         }
 
+        private void countScoreHelper(List<int> subset)
+        {
+            int i = 0;
+            List<int> smallSubset = new List<int>();
+            List<int> helpSubset = new List<int>();
+            List<Tuple<int, int>> subsetList = new List<Tuple<int, int>>();
+            bool last = false;
+
+            Debug.WriteLine("start");
+
+            while (!last)
+            {
+                smallSubset = subset.GetRange(i, subset.Count - i);
+                
+                int oneSetStart = i;
+                int oneSetFinish = smallSubset.FindIndex(item => item == 0) + i;
+                subsetList.Add(new Tuple<int, int>(oneSetStart, oneSetFinish - 1));
+
+                int sizeOneSet = oneSetFinish - i;
+                helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); // help z zerami na poczatku
+                int helpFirstOne = helpSubset.FindIndex(item => item == 1);              // index pierwszej 1
+                int sizeZeroSet = helpSubset.Count - (helpSubset.Count - helpFirstOne);
+                i = i + sizeOneSet + sizeZeroSet;
+
+                helpSubset = helpSubset.GetRange(helpFirstOne, helpSubset.Count - helpFirstOne);
+                int helpLastOne = helpSubset.FindLastIndex(item => item == 1);
+                last = true;
+                for (int j = 0; j <= helpLastOne; j++)
+                {
+                    if (helpSubset[j] == 0)
+                    {
+                        last = false;
+                    }
+
+                }
+                if (last)
+                {
+                    subsetList.Add(new Tuple<int, int>(i, i + helpLastOne));
+                }
+            }
+            foreach (var ii in subsetList)
+              Debug.WriteLine("zbior jedynek" + Convert.ToString(ii.Item1 + " " + Convert.ToString(ii.Item2)));
+        }
+
+       
         //////////////////////////////////////////////////////////////////////////////////
         //obsługa elementów
         /// /////////////////////////////////////////////////////////////////////////////
@@ -316,6 +342,7 @@ namespace Projekt_Zaawansowane_Programowanie
             clearTable();
             generateEmptyTable( int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text) );
             fillTable(comboBoxLevel.Text);
+            shuffle();
         }
 
         private void buttonGenerateErrors_Click(object sender, EventArgs e)
