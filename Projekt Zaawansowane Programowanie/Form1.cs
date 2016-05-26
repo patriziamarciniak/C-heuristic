@@ -4,27 +4,20 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace Projekt_Zaawansowane_Programowanie
 {
     public partial class Form1 : Form
     {
-        UserErrors UserErrors = new UserErrors();
         DataTable DTable = new DataTable(); //nowa tebelka danych
         BindingSource SBind = new BindingSource();
-        int errors;
-
-
-        //DataTable Instance = new DataTable();
-        //SBind = new BindingSource(); //obiekt 'komunikatora' miedzy DataTable a DataGridView
-        //SBind.DataSource = DTable; // 1st lvl connection
-        //	dataGridView2.DataSource = SBind; // final connection
-        ////DataTable DTable;
-        ////BindingSource SBind; //zmienna globalna
 
         public Form1()
         {
@@ -33,8 +26,6 @@ namespace Projekt_Zaawansowane_Programowanie
 
             SBind.DataSource = DTable; // 1st lvl connection
             dataGridViewInput.DataSource = SBind; // final connection
-
-
 
         }
 
@@ -48,8 +39,9 @@ namespace Projekt_Zaawansowane_Programowanie
                 this.comboBoxPlaces.Items.Add(i);
             };
             comboBoxPlaces.SelectedIndex = 9;
-            comboBoxSamples.SelectedIndex = 9;
+            comboBoxSamples.SelectedIndex = 19;
             comboBoxErrors.SelectedIndex = 5;
+            comboBoxLevel.SelectedIndex = 1;
         }
 
         private void clearTable()
@@ -95,35 +87,51 @@ namespace Projekt_Zaawansowane_Programowanie
             }
         }
 
-        private void fillTable()
+        private void fillTable(String level)
         {
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
             Random rnd = new Random();
+            int seqLength = 0;
+            int start;
+            int flag;
 
-            console.Text = " ";
             for (int i = 0; i < rows; i++)
             {
-                int seqLength = rnd.Next(1, columns + 1);
-                int start = rnd.Next(0, columns - seqLength + 1);
-                
-                /*
-                for (int ii = 0; ii < start -1 ; ii++)
+                switch (level)
                 {
-                    DTable.Rows[i][ii] = "0";
+                    case "Łatwy":
+                        flag = rnd.Next(0, 2);
+                        if (flag == 0)
+                        {
+                            seqLength = rnd.Next(Convert.ToInt32(columns * 0.1), Convert.ToInt32(columns * 0.3));
+                        }else
+                        {
+                            seqLength = rnd.Next(Convert.ToInt32(columns * 0.8), columns);
+                        }
+                        break;
+                    case "Średni":
+                        flag = rnd.Next(0, 2);
+                        if (flag == 0)
+                        {
+                            seqLength = rnd.Next(Convert.ToInt32(columns * 0.3), Convert.ToInt32(columns * 0.4));
+                        }
+                        else
+                        {
+                            seqLength = rnd.Next(Convert.ToInt32(columns * 0.7), Convert.ToInt32(columns * 0.8));
+                        }
+                        break;
+                    case "Trudny":
+                        seqLength = rnd.Next(Convert.ToInt32(columns * 0.4), Convert.ToInt32(columns * 0.7));
+                        break;
                 }
-                */
+                start = rnd.Next(0, columns - seqLength + 1);
+                
                 for (int ii = start ; ii < start + seqLength ; ii++)
                 {
                     DTable.Rows[i][ii] = "1";
-                    dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.Olive;
+                    dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue;
                 }
-                /*
-                for (int ii = start + seqLength - 1; ii < columns; ii++)
-                {
-                    DTable.Rows[i][ii] = "0";
-                }
-                */
             }
         }
 
@@ -200,9 +208,6 @@ namespace Projekt_Zaawansowane_Programowanie
             DTable.Columns[Convert.ToString(b)].ColumnName = "h";
             DTable.Columns[Convert.ToString(a)].ColumnName = Convert.ToString(b);
             DTable.Columns["h"].ColumnName = Convert.ToString(a);
-
-
-
         }
 
         public void shuffle()
@@ -239,6 +244,68 @@ namespace Projekt_Zaawansowane_Programowanie
             */
         }
 
+        private void saveToFile()
+        {
+            DTable.TableName = "Tablica danych";
+            DTable.WriteXml("instancja.xml");
+            MessageBox.Show("Instancja zapisana do pliku 'bin/debug/instancja.xml'.");
+            /*
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Stream s = File.Open(saveFileDialog.FileName, FileMode.CreateNew);
+                StreamWriter writer = new StreamWriter(s);
+                writer.Write("aaaaasadas");
+                writer.Close();
+            }
+            */
+        }
+
+        private void readFile()
+        {
+            dataGridViewInput.DataSource = null;
+            dataGridViewInput.AutoGenerateColumns = true;
+            XmlReader xmlFile = XmlReader.Create("instancja.xml", new XmlReaderSettings());
+            DataSet data = new DataSet();
+            data.ReadXml(xmlFile);
+            xmlFile.Close();
+
+            DTable = data.Tables[0];
+            SBind = new BindingSource();
+            SBind.DataSource = DTable;
+            dataGridViewInput.DataSource = SBind;
+            /*
+            DialogResult result = openFileInput.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                string file = openFileInput.FileName;
+                Debug.WriteLine(file); // <-- For debugging use.    
+            }
+            */
+        }
+
+        private void moveColumn(int column, int index)
+        {
+            DTable.Columns[Convert.ToString(column)].SetOrdinal(index);
+        }
+
+        private void countScore()
+        {
+            int score;
+            int[] row = new int[DTable.Columns.Count]; 
+
+            for (int i = 0; i < DTable.Rows.Count; i++)
+            {
+                for (int ii = 0; ii < DTable.Columns.Count; ii++)
+                {
+                    row[ii] = Convert.ToInt32(DTable.Rows[i][ii]);
+//                    Debug.WriteLine(Convert.ToString(row[ii]));
+                }
+
+            }
+            
+        }
+
         //////////////////////////////////////////////////////////////////////////////////
         //obsługa elementów
         /// /////////////////////////////////////////////////////////////////////////////
@@ -248,7 +315,7 @@ namespace Projekt_Zaawansowane_Programowanie
         {
             clearTable();
             generateEmptyTable( int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text) );
-            fillTable();
+            fillTable(comboBoxLevel.Text);
         }
 
         private void buttonGenerateErrors_Click(object sender, EventArgs e)
@@ -258,23 +325,24 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // UserErrors.Show();
             clearTable();
             generateEmptyTable(int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text));
         }
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            //swapColumn(8, 9);
-            shuffle();
+            //  shuffle();
+            countScore();
         }
 
-        /*
-        public void getUserErrors(string text)
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            this.errors = int.Parse(text);
-            console.Text = text;
+            readFile();
         }
-        */
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            saveToFile();
+        }
     }
 }
