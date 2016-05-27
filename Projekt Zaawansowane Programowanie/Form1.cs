@@ -39,7 +39,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 this.comboBoxPlaces.Items.Add(i);
             };
             comboBoxPlaces.SelectedIndex = 9;
-            comboBoxSamples.SelectedIndex = 0;
+            comboBoxSamples.SelectedIndex = 6;
             comboBoxErrors.SelectedIndex = 5;
             comboBoxLevel.SelectedIndex = 1;
         }
@@ -188,34 +188,15 @@ namespace Projekt_Zaawansowane_Programowanie
             }
         }
 
-        public void swapColumn(int a, int b)
-        {
-            for (int i = 0; i < DTable.Rows.Count; i++)
-            {
-                if(DTable.Rows[i][Convert.ToString(a)] != DTable.Rows[i][Convert.ToString(b)])
-                {
-                    String o = Convert.ToString(DTable.Rows[i][Convert.ToString(a)]);
-                    DTable.Rows[i][Convert.ToString(a)] = Convert.ToString(DTable.Rows[i][Convert.ToString(b)]);
-                    DTable.Rows[i][Convert.ToString(b)] = o;
-                }
-            }
-            DTable.Columns[Convert.ToString(b)].ColumnName = "h";
-            DTable.Columns[Convert.ToString(a)].ColumnName = Convert.ToString(b);
-            DTable.Columns["h"].ColumnName = Convert.ToString(a);
-        }
-
         public void shuffle()
         {
             Random r = new Random();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 100; i++)
             {
                 int a = r.Next(0, DTable.Columns.Count);
                 int b = r.Next(0, DTable.Columns.Count);
-                if (a != b)
-                {
-                    swapColumn(a, b);
-                }
-        }
+                moveColumn(a, b);
+            }
         }
 
         private void saveToFile()
@@ -261,14 +242,23 @@ namespace Projekt_Zaawansowane_Programowanie
         private void moveColumn(int column, int index)
         {
             DTable.Columns[Convert.ToString(column)].SetOrdinal(index);
+            for (int i = 0; i < DTable.Rows.Count; i++)
+            {
+                for (int ii = 0; ii < DTable.Columns.Count; ii++)
+                {
+                    if (Convert.ToString(DTable.Rows[i][ii]) == "1")
+                        dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue;
+                }
+            }
         }
 
-        private void countScore()
+        private int countScore()
         {
-            int score, start, end;
-            Boolean flag = false;
+            int score = 0;
+            int start, end;
             List<int> row = new List<int>();
             List<int> subset = new List<int>();
+            int[] startSet = new int[2];
 
             for (int i = 0; i < DTable.Rows.Count; i++)
             {
@@ -276,26 +266,133 @@ namespace Projekt_Zaawansowane_Programowanie
                 {
                     row.Add(Convert.ToInt32(DTable.Rows[i][ii]));
                 }
-                start = row.FindIndex(item => item == 1);
-                end = row.FindLastIndex(item => item == 1);
-                subset = row.GetRange(start, end - start + 1);
 
-               countScoreHelper(subset);
-
+                if (row.FindIndex(item => item == 0) == -1 || row.FindIndex(item => item == 1) == -1 )
+                {
+                    score = score + 0;
+                }else
+                {
+                    start = row.FindIndex(item => item == 1);
+                    end = row.FindLastIndex(item => item == 1);
+                    subset = row.GetRange(start, end - start + 1);
+                    if (subset.FindIndex(item => item == 0) != -1)
+                    {
+                        startSet = findLongestOneSet(subset);
+                        score = score + countScoreHelper(startSet, subset); // liczenie score
+                    }
+                }
                 row.Clear();
                 subset.Clear();
             }
+            return score;
         }
 
-        private void countScoreHelper(List<int> subset)
+        private int countScoreHelper(int[] startSet, List<int> subset)
+        {
+            int scoreLeft = 0;
+            int scoreRight = 0;
+            int maxScore = 0;
+            List<int> helpSubset = new List<int>();
+
+            if (startSet[0] != 0)
+            {
+                helpSubset = subset.GetRange(0, startSet[0]);
+                maxScore = counter(helpSubset);
+               // Debug.WriteLine("wynik lewej: " + Convert.ToString(countLeftScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
+                scoreLeft = countLeftScore(helpSubset, 0, maxScore);
+            }
+
+            if (startSet[1] != subset.Count - 1)
+            {
+                helpSubset = subset.GetRange(startSet[1] + 1, subset.Count - startSet[1] - 1);
+                maxScore = counter(helpSubset);
+               // Debug.WriteLine("wynik prawej: " + Convert.ToString(countRightScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
+                scoreRight = countRightScore(helpSubset, 0, maxScore);
+            }
+            return scoreLeft + scoreRight;
+            
+        }
+
+        private int countRightScore(List<int> subset, int score, int bigMaxScore)
+        {
+            int subscore = score;
+            int maxScore = counter(subset);
+            List<int> helpSubset = new List<int>();
+
+            int firstOne = subset.FindIndex(item => item == 1);
+            int lenZeroSet = subset.Count - (subset.Count - firstOne );
+            if (lenZeroSet >= maxScore)
+            {
+                return bigMaxScore;
+            }
+            else
+            {
+                subscore = subscore + lenZeroSet;
+                helpSubset = subset.GetRange(firstOne, subset.Count - firstOne );
+                int firstZero = helpSubset.FindIndex(item => item == 0);
+                helpSubset = helpSubset.GetRange( firstZero, helpSubset.Count - firstZero );
+
+                   if (helpSubset.FindIndex(item => item == 0) == -1)
+                   {
+                   return subscore;
+                   }
+                   else
+                   {
+                   return countRightScore(helpSubset, subscore, bigMaxScore);
+                    }
+            }
+        }
+
+        private int countLeftScore(List<int> subset, int score, int bigMaxScore) {
+
+            int subscore = score;
+            int maxScore = counter(subset);
+            List<int> helpSubset = new List<int>();
+            int lastOne = subset.FindLastIndex(item => item == 1);
+            int lenZeroSet = subset.Count - lastOne - 1;
+
+            if (lenZeroSet >= maxScore)
+            {
+                return bigMaxScore;
+            }else
+            {
+                subscore = subscore + lenZeroSet;
+                helpSubset = subset.GetRange(0, lastOne + 1);
+                helpSubset = helpSubset.GetRange(0, helpSubset.FindLastIndex(item => item == 0) + 1);
+
+                if (helpSubset.FindIndex(item => item == 0) == -1)
+                {
+                    return subscore;
+                }else
+                {
+                    return countLeftScore(helpSubset, subscore, bigMaxScore);
+                }
+            }
+        }   
+
+        private int counter(List<int> subset)
+        {
+            int countZero = 0;
+            int countOne = 0;
+
+            for (int i = 0; i < subset.Count; i++)
+            {
+                if (subset[i] == 0)
+                    countZero++;
+                else
+                    countOne++;
+            }
+            return Math.Min(countOne, countZero);
+        }
+
+        private int[] findLongestOneSet(List<int> subset)
         {
             int i = 0;
             List<int> smallSubset = new List<int>();
             List<int> helpSubset = new List<int>();
             List<Tuple<int, int>> subsetList = new List<Tuple<int, int>>();
+            int[] longestSubset = new int[2];
             bool last = false;
-
-            Debug.WriteLine("start");
 
             while (!last)
             {
@@ -306,6 +403,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 subsetList.Add(new Tuple<int, int>(oneSetStart, oneSetFinish - 1));
 
                 int sizeOneSet = oneSetFinish - i;
+                ////////////////// tu jest coś nie tak
                 helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); // help z zerami na poczatku
                 int helpFirstOne = helpSubset.FindIndex(item => item == 1);              // index pierwszej 1
                 int sizeZeroSet = helpSubset.Count - (helpSubset.Count - helpFirstOne);
@@ -320,18 +418,58 @@ namespace Projekt_Zaawansowane_Programowanie
                     {
                         last = false;
                     }
-
                 }
                 if (last)
                 {
                     subsetList.Add(new Tuple<int, int>(i, i + helpLastOne));
                 }
             }
+
+            int len = 0;
             foreach (var ii in subsetList)
-              Debug.WriteLine("zbior jedynek" + Convert.ToString(ii.Item1 + " " + Convert.ToString(ii.Item2)));
+            {
+                if (ii.Item2 - ii.Item1 + 1 > len)
+                {
+                    len = ii.Item2 - ii.Item1 + 1;
+                    longestSubset[0] = ii.Item1;
+                    longestSubset[1] = ii.Item2;
+                }
+            }
+            //Debug.WriteLine("najdluzszy ciag: " + Convert.ToString(len) + "wspolrzedne: " + Convert.ToString(longestSubset[0]) + " " + Convert.ToString(longestSubset[1]));
+            return longestSubset;
         }
 
-       
+        private void localSearch(int turns)
+        {
+            Random r = new Random();
+            int bestScore = countScore();
+            Debug.WriteLine(" start best score: " + Convert.ToString(bestScore));
+            int oldIndex, newIndex, column, moves;
+            int newScore = 99999999;
+
+            for (int i = 0; i < turns; i++)
+            {
+                moves = 0;
+                while (newScore >= bestScore)
+                {
+                    moves++ ;
+                    column = r.Next(0, DTable.Columns.Count);
+                    newIndex = r.Next(0, DTable.Columns.Count);
+                    oldIndex = DTable.Columns[Convert.ToString(column)].Ordinal;
+                    moveColumn(column, newIndex);
+                    newScore = countScore();
+
+                    if (newScore >= bestScore)
+                    {
+                        moveColumn(column, oldIndex);
+                    }
+                }
+                bestScore = newScore;
+                Debug.WriteLine("new best score" + Convert.ToString(bestScore) + "after moves:" + Convert.ToString(moves));
+            }
+
+        }
+
         //////////////////////////////////////////////////////////////////////////////////
         //obsługa elementów
         /// /////////////////////////////////////////////////////////////////////////////
@@ -342,7 +480,7 @@ namespace Projekt_Zaawansowane_Programowanie
             clearTable();
             generateEmptyTable( int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text) );
             fillTable(comboBoxLevel.Text);
-            shuffle();
+           // shuffle();
         }
 
         private void buttonGenerateErrors_Click(object sender, EventArgs e)
@@ -358,8 +496,7 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            //  shuffle();
-            countScore();
+            shuffle();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -370,6 +507,14 @@ namespace Projekt_Zaawansowane_Programowanie
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
             saveToFile();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            //localSearch(1);
+            LocalSearch ls = new LocalSearch();
+            ls.Show();
+            this.Visible = false;
         }
     }
 }
