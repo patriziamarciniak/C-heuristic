@@ -73,6 +73,7 @@ namespace Projekt_Zaawansowane_Programowanie
             // dataGridViewInput
             // 
             this.dataGridViewInput.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewInput.BackgroundColor = System.Drawing.SystemColors.ActiveCaptionText;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -93,7 +94,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.dataGridViewInput.Dock = System.Windows.Forms.DockStyle.Left;
             this.dataGridViewInput.Location = new System.Drawing.Point(0, 24);
             this.dataGridViewInput.Name = "dataGridViewInput";
-            this.dataGridViewInput.Size = new System.Drawing.Size(434, 544);
+            this.dataGridViewInput.Size = new System.Drawing.Size(439, 544);
             this.dataGridViewInput.TabIndex = 0;
             // 
             // menuStrip1
