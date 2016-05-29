@@ -52,6 +52,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="TabuSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabuSearch.Designer.cs">
+      <DependentUpon>TabuSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="LocalSearch.cs">
       <SubType>Form</SubType>
     </Compile>
