@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonTabuSearch = new System.Windows.Forms.Button();
             this.textBoxLocalSearchScore = new System.Windows.Forms.TextBox();
             this.labelPrimarySolution = new System.Windows.Forms.Label();
             this.labelLocalSearchScore = new System.Windows.Forms.Label();
@@ -38,7 +39,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.dataGridViewLocalSearch = new System.Windows.Forms.DataGridView();
-            this.buttonTabuSearch = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLocalSearch)).BeginInit();
             this.SuspendLayout();
@@ -58,6 +58,25 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(735, 194);
             this.panel1.TabIndex = 0;
+            // 
+            // buttonTabuSearch
+            // 
+            this.buttonTabuSearch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonTabuSearch.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.buttonTabuSearch.FlatAppearance.BorderColor = System.Drawing.Color.OldLace;
+            this.buttonTabuSearch.FlatAppearance.BorderSize = 5;
+            this.buttonTabuSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.buttonTabuSearch.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonTabuSearch.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonTabuSearch.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.buttonTabuSearch.Location = new System.Drawing.Point(286, 135);
+            this.buttonTabuSearch.Name = "buttonTabuSearch";
+            this.buttonTabuSearch.Padding = new System.Windows.Forms.Padding(1);
+            this.buttonTabuSearch.Size = new System.Drawing.Size(153, 30);
+            this.buttonTabuSearch.TabIndex = 19;
+            this.buttonTabuSearch.Text = "Tabu Search";
+            this.buttonTabuSearch.UseVisualStyleBackColor = false;
+            this.buttonTabuSearch.Click += new System.EventHandler(this.buttonTabuSearch_Click);
             // 
             // textBoxLocalSearchScore
             // 
@@ -163,25 +182,6 @@
             this.dataGridViewLocalSearch.Size = new System.Drawing.Size(735, 371);
             this.dataGridViewLocalSearch.TabIndex = 1;
             // 
-            // buttonTabuSearch
-            // 
-            this.buttonTabuSearch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonTabuSearch.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.buttonTabuSearch.FlatAppearance.BorderColor = System.Drawing.Color.OldLace;
-            this.buttonTabuSearch.FlatAppearance.BorderSize = 5;
-            this.buttonTabuSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.buttonTabuSearch.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonTabuSearch.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonTabuSearch.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonTabuSearch.Location = new System.Drawing.Point(286, 135);
-            this.buttonTabuSearch.Name = "buttonTabuSearch";
-            this.buttonTabuSearch.Padding = new System.Windows.Forms.Padding(1);
-            this.buttonTabuSearch.Size = new System.Drawing.Size(153, 30);
-            this.buttonTabuSearch.TabIndex = 19;
-            this.buttonTabuSearch.Text = "Tabu Search";
-            this.buttonTabuSearch.UseVisualStyleBackColor = false;
-            this.buttonTabuSearch.Click += new System.EventHandler(this.buttonTabuSearch_Click);
-            // 
             // LocalSearch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -190,6 +190,7 @@
             this.ClientSize = new System.Drawing.Size(734, 568);
             this.Controls.Add(this.dataGridViewLocalSearch);
             this.Controls.Add(this.panel1);
+            this.MaximizeBox = false;
             this.Name = "LocalSearch";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Multi Start Local Search";

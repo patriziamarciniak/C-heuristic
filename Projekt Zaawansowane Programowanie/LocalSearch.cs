@@ -55,6 +55,8 @@ namespace Projekt_Zaawansowane_Programowanie
                 DTableActual.Rows.Add();
                 DTableOutput.Rows.Add();
             }
+
+
         }
 
         private int countScore(DataTable DTable)
@@ -273,12 +275,13 @@ namespace Projekt_Zaawansowane_Programowanie
                         column = r.Next(0, DTable.Columns.Count);
                         newIndex = r.Next(0, DTable.Columns.Count);
                         oldIndex = DTable.Columns[Convert.ToString(column)].Ordinal;
-                        form.moveColumn(column, newIndex, DTable);
+                        DTable.Columns[Convert.ToString(column)].SetOrdinal(newIndex);
+                      //  form.moveColumn(column, newIndex, DTable);
                         newScore = countScore(DTable);
 
                         if (newScore >= bestScore)
                         {
-                            form.moveColumn(column, oldIndex, DTable);
+                            DTable.Columns[Convert.ToString(column)].SetOrdinal(oldIndex);
                         }
                         else
                         {
@@ -343,11 +346,18 @@ namespace Projekt_Zaawansowane_Programowanie
             SBind.DataSource = DTableOutput; // 1st lvl connection
             dataGridViewLocalSearch.DataSource = SBind; // final connection
 
+            foreach (DataGridViewColumn column in dataGridViewLocalSearch.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
         }
 
         private void buttonTabuSearch_Click(object sender, EventArgs e)
         {
-
+            TabuSearch ts = new TabuSearch(DTableOutput);
+            ts.Show();
+            this.Visible = false;
         }
     }
 

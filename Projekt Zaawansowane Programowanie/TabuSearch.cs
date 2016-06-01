@@ -25,36 +25,170 @@ namespace Projekt_Zaawansowane_Programowanie
             columns = DTable.Columns.Count;
         }
 
-        public void startTabu(int tabuListSize, int limit)
+        public void startTabu(int userLimit)
         {
+            Debug.WriteLine("Wynik na start: " + Convert.ToString(countScore(DTable)));
+
+
+            DataTable DTableBest = new DataTable();
+            int columns = DTable.Columns.Count;
+            int rows = DTable.Rows.Count;
+            int limit = userLimit;
+            int bestScore = 99999999;
+            int score = 0;
+            int previousScore;
+            int littleRestart = 20;
+
+            for (int i = 0; i < columns; i++)
+            {
+                DTableBest.Columns.Add(i.ToString());
+            }
+            for (int i = 0; i < rows; i++)
+            {
+                DTableBest.Rows.Add();
+            }
+
+            while (limit > 0 || bestScore == 0)
+            {
+                if (littleRestart == 0)
+                {
+                    Debug.WriteLine("wykonuje mały restart w turze " + Convert.ToString(limit));
+
+                    Random rand = new Random();
+                    for (int i = 0; i < 3; i++)
+                    {
+                        DTable.Columns[rand.Next(0, columns)].SetOrdinal(rand.Next(0, columns));
+                    }
+                    littleRestart = 20;
+                }
+
+                makeMove();
+                previousScore = score;
+                score = countScore(DTable);
+                Debug.WriteLine("Wynik:  " + Convert.ToString(score) + " w turze: " + Convert.ToString(limit));
+
+                if (score < bestScore)
+                {
+                    Debug.WriteLine("Uzyskałem lepszy wynik:  " + Convert.ToString(score));
+
+                    bestScore = score;
+                    for (int c = 0; c < rows; c++)
+                    {
+                        for (int cc = 0; cc < columns; cc++)
+                        {
+                            DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
+                        }
+                    }
+                }
+                if (previousScore == score)
+                {
+                    littleRestart--;
+                }
+                else
+                {
+                    littleRestart = 20;
+                }
+
+
+                limit--;
+            }
+
+
+            Debug.WriteLine("Wynik algorytmu: " + Convert.ToString(bestScore));
+
+            for (int c = 0; c < rows; c++)
+            {
+                for (int cc = 0; cc < columns; cc++)
+                {
+                    Debug.WriteLine(DTable.Rows[c][cc] + " " + DTableBest.Rows[c][cc]);
+                }
+            }
+
+        //    SBind.DataSource = null; // 1st lvl connection
+
+        //    SBind.DataSource = DTableBest; // 1st lvl connection
+        //    dataGridViewInput.DataSource = SBind; // final connection
 
 
         }
 
-        public List <Tuple<int, int>> findProblematicColumns()
+        //public void makeMove(int tabuListSize, int limit)
+        public void makeMove()
         {
-            List<Tuple<int, int>> targetColumns = new List<Tuple<int, int>>();
             Dictionary<int, int> scores = new Dictionary<int, int>();
+            List<Move> sortedScores = new List<Move>();
+            Queue<Move> tabuList = new Queue<Move>();
+            bool onTabu = false;
+            bool flag = true;
+            int tabuListSize = 10;
 
+            sortedScores = countProbability();
 
+            while (flag)
+            {
+                for (int i = 0; i < sortedScores.Count; i++)
+                {
+                    //   Debug.WriteLine("analizuje " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(sortedScores[i].getIndex()));
 
-            return targetColumns;
+                    foreach (Move value in tabuList)
+                    {
+                        if (value.getColumn() == sortedScores[i].getColumn() && value.getIndex() == sortedScores[i].getIndex())
+                        {
+                            onTabu = true;
+                            //       Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(value.getColumn()) + Convert.ToString(value.getIndex()));
+
+                        }
+
+                        // Debug.WriteLine("z listy tabu: " + Convert.ToString(value.getColumn()) + Convert.ToString(value.getIndex()));
+                    }
+                    if (!onTabu)
+                    {
+                        //     Debug.WriteLine("nie bylo mnie na tabu, wykonuej ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(sortedScores[i].getIndex()));
+
+                        DTable.Columns[sortedScores[i].getColumn()].SetOrdinal(sortedScores[i].getIndex());
+                        addToQueue(tabuList, tabuListSize, sortedScores[i]);
+                        flag = false;
+
+                    }
+                }
+            }
+
+            foreach (Move pair in tabuList)
+            {
+                //     Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
+            }
+
         }
 
-        public Dictionary<int, int> countProbability()
+        public void addToQueue(Queue<Move> tabuList, int limit, Move move)
         {
+            if (tabuList.Count < limit)
+            {
+                tabuList.Enqueue(move);
+            }
+            else
+            {
+                tabuList.Enqueue(move);
+                tabuList.Dequeue();
+            }
+        }
+
+        public List<Move> countProbability()
+        {
+            //     Debug.WriteLine("im in count probability");
+
             Dictionary<int, int> scores = new Dictionary<int, int>();
+            Dictionary<int, int> orderedScores = new Dictionary<int, int>();
+            List<Move> sortedScores = new List<Move>();
+
             int score = 0;
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
 
-
             for (int i = 0; i < rows; i++)
             {
                 if (Convert.ToInt32(DTable.Rows[i][0]) == 1 && Convert.ToInt32(DTable.Rows[i][1]) == 0)
-                {
                     score++;
-                }
             }
             scores.Add(0, score);
 
@@ -64,13 +198,9 @@ namespace Projekt_Zaawansowane_Programowanie
                 for (int ii = 0; ii < rows; ii++)
                 {
                     if (Convert.ToInt32(DTable.Rows[ii][i - 1]) == 1 && Convert.ToInt32(DTable.Rows[ii][i]) == 0 && Convert.ToInt32(DTable.Rows[ii][i + 1]) == 1)
-                    {
                         score++;
-                    }
                     if (Convert.ToInt32(DTable.Rows[ii][i - 1]) == 0 && Convert.ToInt32(DTable.Rows[ii][i]) == 1 && Convert.ToInt32(DTable.Rows[ii][i + 1]) == 0)
-                    {
                         score++;
-                    }
                 }
                 scores.Add(i, score);
             }
@@ -79,22 +209,23 @@ namespace Projekt_Zaawansowane_Programowanie
             for (int i = 0; i < rows; i++)
             {
                 if (Convert.ToInt32(DTable.Rows[i][columns - 2]) == 0 && Convert.ToInt32(DTable.Rows[i][columns - 1]) == 1)
-                {
                     score++;
-                }
             }
             scores.Add(columns - 1, score);
 
-            var items = from pair in scores
-                    orderby pair.Value descending
-                    select pair;
-            
-            foreach (KeyValuePair<int, int> pair in scores)
+            var helper = from pair in scores
+                         orderby pair.Value descending
+                         select pair;
+
+            foreach (KeyValuePair<int, int> pair in helper)
             {
-                Debug.WriteLine(Convert.ToString(pair.Key) + " : " + Convert.ToString(pair.Value));
+                orderedScores.Add(pair.Key, pair.Value);
+                sortedScores.Add(new Move(pair.Key, pair.Value));
+                //   Debug.WriteLine("cala lista: " + Convert.ToString(pair.Key) + " : " + Convert.ToString(pair.Value));
+
             }
 
-            return scores;
+            return sortedScores;
         }
         //Maszyniera do liczenia score///////////////////////////
         public void moveColumn(int column, int index)
@@ -205,6 +336,7 @@ namespace Projekt_Zaawansowane_Programowanie
             }
         }
 
+
         private int countLeftScore(List<int> subset, int score, int bigMaxScore)
         {
 
@@ -304,6 +436,29 @@ namespace Projekt_Zaawansowane_Programowanie
             return longestSubset;
         }
 
+
+    }
+
+    public class Move
+    {
+
+        int column;
+        int index;
+
+        public Move(int _column, int _index)
+        {
+            this.column = _column;
+            this.index = _index;
+        }
+
+        public int getColumn()
+        {
+            return column;
+        }
+        public int getIndex()
+        {
+            return index;
+        }
 
     }
 }

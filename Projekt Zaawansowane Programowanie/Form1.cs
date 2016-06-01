@@ -20,6 +20,9 @@ namespace Projekt_Zaawansowane_Programowanie
         BindingSource SBind = new BindingSource();
         List<int> pierwsza = new List<int>();
         List<int> druga = new List<int>();
+        Queue<Move> tabuList = new Queue<Move>();
+        int tabuListSize = 10;
+
 
         public Form1()
         {
@@ -30,20 +33,18 @@ namespace Projekt_Zaawansowane_Programowanie
             dataGridViewInput.DataSource = SBind; // final connection
 
             /*
-           for (int i = 0; i <=5; i++)
-           {
-               pierwsza.Add(i);
-           }
-
-
-           druga = pierwsza.Clo
-           druga[0] = 222;
-           for (int i = 0; i <= 5; i++)
-           {
-              Debug.WriteLine("pierwsza" + Convert.ToString(pierwsza[i]));
-               Debug.WriteLine("druga" + Convert.ToString(pierwsza[i]));
-           }
-           */
+            for (int i = 0; i<5; i++)
+            {
+                if(i < 2)
+                {
+                    Debug.WriteLine(Convert.ToString(i));
+                }else
+                {
+                    i = 10;
+                }
+            }
+            Debug.WriteLine("wyszedlem");
+            */
 
         }
 
@@ -60,6 +61,8 @@ namespace Projekt_Zaawansowane_Programowanie
             comboBoxSamples.SelectedIndex = 6;
             comboBoxErrors.SelectedIndex = 5;
             comboBoxLevel.SelectedIndex = 1;
+
+
         }
 
         private void clearTable()
@@ -102,6 +105,11 @@ namespace Projekt_Zaawansowane_Programowanie
                 {
                     DTable.Rows[i][ii] = "0";
                 }
+            }
+
+            foreach (DataGridViewColumn column in dataGridViewInput.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
         }
 
@@ -213,7 +221,7 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 int a = r.Next(0, DTable.Columns.Count);
                 int b = r.Next(0, DTable.Columns.Count);
-                moveColumn(a, b, DTable);
+                DTable.Columns[Convert.ToString(a)].SetOrdinal(b);
             }
         }
 
@@ -417,7 +425,6 @@ namespace Projekt_Zaawansowane_Programowanie
                 subsetList.Add(new Tuple<int, int>(oneSetStart, oneSetFinish - 1));
 
                 int sizeOneSet = oneSetFinish - i;
-                ////////////////// tu jest coś nie tak
                 helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); // help z zerami na poczatku
                 int helpFirstOne = helpSubset.FindIndex(item => item == 1);              // index pierwszej 1
                 int sizeZeroSet = helpSubset.Count - (helpSubset.Count - helpFirstOne);
@@ -455,33 +462,16 @@ namespace Projekt_Zaawansowane_Programowanie
 
         /// ///////////////////////////
 
-        public void moveColumn(int column, int index, DataTable DTable)
-        {
-            DTable.Columns[Convert.ToString(column)].SetOrdinal(index);
-            /*
-            for (int i = 0; i < DTable.Rows.Count; i++)
-            {
-                for (int ii = 0; ii < DTable.Columns.Count; ii++)
-                {
-                    if (Convert.ToString(DTable.Rows[i][ii]) == "1")
-                        dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue;
-                }
-            }
-            */
-        }
-
+ //Tabu//////////////////////////////////////////////////////////////////////////////
         public void startTabu(int userLimit)
         {
             Debug.WriteLine("Wynik na start: " + Convert.ToString(countScore(DTable)));
 
 
             DataTable DTableBest = new DataTable();
+            List<Move> sortedScores = new List<Move>();
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
-            int limit = userLimit;
-            int bestScore = 99999999;
-            int score;
-            int littleRestart = 20;
 
             for (int i = 0; i < columns; i++)
             {
@@ -492,10 +482,33 @@ namespace Projekt_Zaawansowane_Programowanie
                 DTableBest.Rows.Add();
             }
 
-            while ( limit > 0 || bestScore == 0)
+            for (int c = 0; c < rows; c++)
+            {
+                for (int cc = 0; cc < columns; cc++)
+                {
+                    DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
+
+                }
+            }
+
+            int limit = userLimit;
+            int bestScore = countScore(DTable);
+            int score = 0;
+            int bestTurn;
+            int previousScore = 999999999;
+            int littleRestart = 20;
+            int limitForBigRestart = (int)limit / 4;
+            int bigRestart = limitForBigRestart;
+        //    Debug.WriteLine("Big restart limit  " + Convert.ToString(limitForBigRestart));
+
+
+
+            while (limit > 0 && bestScore != 0)
             {
                 if (littleRestart == 0)
                 {
+                    Debug.WriteLine("wykonuje mały restart w turze " + Convert.ToString(limit));
+
                     Random rand = new Random();
                     for (int i = 0; i < 3; i++)
                     {
@@ -503,12 +516,52 @@ namespace Projekt_Zaawansowane_Programowanie
                     }
                     littleRestart = 20;
                 }
+/*
+                if (bigRestart == 0)
+                {
+                    for (int c = 0; c < rows; c++)
+                    {
+                        for (int cc = 0; cc < columns; cc++)
+                        {
+                            DTable.Rows[c][cc] = DTableBest.Rows[c][cc];
 
+                        }
+                    }
+                    Debug.WriteLine("wykonuje duży restart w turze " + Convert.ToString(limit));
+                 //   tabuList.Clear();
+                 //   foreach(Move tabu in tabuList)
+                 //   {
+                  //      Debug.WriteLine("lista po clear " + Convert.ToString(tabu.getColumn()) + " " + tabu.getIndex());
+
+                 //   }
+
+                    sortedScores = countProbability();
+                    for (int i = 0; i < 2; i++)
+                    {
+                        //tabuList.Enqueue(sortedScores[i]);
+                    }
+                  //  foreach (Move tabu in tabuList)
+                  //  {
+                  //      Debug.WriteLine("lista po dodaniue wartsc " + Convert.ToString(tabu.getColumn()) + " " + tabu.getIndex());
+
+                  //  }
+                    bigRestart = limitForBigRestart;
+                    Debug.WriteLine("duży restart się udał");
+
+                }
+*/
                 makeMove();
+                previousScore = score;
+
                 score = countScore(DTable);
+             //   Debug.WriteLine("previous" + Convert.ToString(previousScore) + "score" + Convert.ToString(score));
+
+                Debug.WriteLine("Wynik:  " + Convert.ToString(score) + " w turze: " + Convert.ToString(limit));
 
                 if (score < bestScore)
                 {
+                    Debug.WriteLine("Uzyskałem lepszy wynik:  " + Convert.ToString(score));
+                    bigRestart = limitForBigRestart;
                     bestScore = score;
                     for (int c = 0; c < rows; c++)
                     {
@@ -519,79 +572,90 @@ namespace Projekt_Zaawansowane_Programowanie
                     }
                 }else
                 {
-                    littleRestart--;
+                    bigRestart--;
+                  //  Debug.WriteLine("Zmniejszam big restart  " + Convert.ToString(bigRestart));
+
                 }
 
-
+                if (previousScore == score && previousScore < score)
+                {
+                    littleRestart--;
+                }
+                else
+                {
+                    littleRestart = 20;
+                }
                 limit--;
             }
 
 
-
-            Debug.WriteLine("Wynik1 : " + Convert.ToString(countScore(DTableBest)));
-
-            Debug.WriteLine("Wynik: " + Convert.ToString(bestScore));
+            Debug.WriteLine("Wynik algorytmu: " + Convert.ToString(bestScore));
 
             for (int c = 0; c < rows; c++)
             {
                 for (int cc = 0; cc < columns; cc++)
                 {
-                    Debug.WriteLine(DTable.Rows[c][cc] + " " + DTableBest.Rows[c][cc]);
+                 //   Debug.WriteLine(DTableBest.Rows[c][cc]);
                 }
             }
 
-            SBind.DataSource = null; // 1st lvl connection
+                SBind.DataSource = null; // 1st lvl connection
 
-            SBind.DataSource = DTableBest; // 1st lvl connection
-            dataGridViewInput.DataSource = SBind; // final connection
+                SBind.DataSource = DTableBest; // 1st lvl connection
+                dataGridViewInput.DataSource = SBind; // final connection
 
 
         }
 
-        //public void makeMove(int tabuListSize, int limit)
         public void makeMove()
         {
             Dictionary<int, int> scores = new Dictionary<int, int>();
             List<Move> sortedScores = new List<Move>();
-            Queue<Move> tabuList = new Queue<Move>();
             bool onTabu = false;
             bool flag = true;
-            int tabuListSize = 5;
+            int indexToMove, indexTarget;
+
+
+            //  Queue<Move> tabuList = new Queue<Move>();
+            //     int tabuListSize = 10;
 
             sortedScores = countProbability();
 
-            while (flag)
+            for (int i = 0; i < sortedScores.Count - 1; i++)
             {
-                for (int i = 0; i < sortedScores.Count; i++)
+                indexToMove = sortedScores[i].getColumn();
+                
+                indexTarget = DTable.Columns[Convert.ToString(sortedScores[i + 1].getColumn())].Ordinal;
+
+                Debug.WriteLine("analizuje ruch" + Convert.ToString(indexToMove) + " na index " + Convert.ToString(indexTarget));
+
+             //  foreach (Move value in tabuList)
+             for (int ii = 0; ii < tabuList.Count; ii++)
                 {
-                    Debug.WriteLine("analizuje " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(sortedScores[i].getIndex()));
+                    Debug.WriteLine("sprawdzam tabu wiersz " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + " " + tabuList.ElementAt(ii).getIndex());
 
-                    foreach (Move value in tabuList)
+                   // if (value.getColumn() == indexToMove && value.getIndex() == indexTarget)
+                   if (tabuList.ElementAt(ii).getColumn() == indexToMove && tabuList.ElementAt(ii).getIndex() == indexTarget)
                     {
-                        if (value.getColumn() == sortedScores[i].getColumn() && value.getIndex() == sortedScores[i].getIndex())
-                        {
-                            onTabu = true;
-                            Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(value.getColumn()) + Convert.ToString(value.getIndex()));
-
-                        }
-
-                        // Debug.WriteLine("z listy tabu: " + Convert.ToString(value.getColumn()) + Convert.ToString(value.getIndex()));
-                    }
-                    if (!onTabu)
-                    {
-                        Debug.WriteLine("nie bylo mnie na tabu, wykonuej ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(sortedScores[i].getIndex()));
-
-                        DTable.Columns[sortedScores[i].getColumn()].SetOrdinal(sortedScores[i].getIndex());
-                        addToQueue(tabuList, tabuListSize, sortedScores[i]);
-                        flag = false;
-
+                        onTabu = true;
+                        Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + Convert.ToString(tabuList.ElementAt(ii).getIndex()));
+                        ii = tabuList.Count;
                     }
                 }
+                if (!onTabu)
+                {
+                    Debug.WriteLine("nie bylo mnie na tabu, wykonuej ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(indexTarget));
+                    DTable.Columns[indexToMove].SetOrdinal(indexTarget);
+                    addToQueue(tabuList, tabuListSize, new Move(indexToMove, indexTarget));
+                    i = sortedScores.Count;
+                }
+                onTabu = false;
             }
+            Debug.WriteLine("wychodze z tabu i wypisuje liste tabu");
 
             foreach (Move pair in tabuList)
             {
-              Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
+                     Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
             }
 
         }
@@ -611,10 +675,11 @@ namespace Projekt_Zaawansowane_Programowanie
 
         public List<Move> countProbability()
         {
-            Debug.WriteLine("im in count probability");
+            string[] columnNames = DTable.Columns.Cast<DataColumn>()
+                                 .Select(x => x.ColumnName)
+                                 .ToArray();
 
             Dictionary<int, int> scores = new Dictionary<int, int>();
-            Dictionary<int, int> orderedScores = new Dictionary<int, int>();
             List<Move> sortedScores = new List<Move>();
 
             int score = 0;
@@ -626,7 +691,9 @@ namespace Projekt_Zaawansowane_Programowanie
                 if (Convert.ToInt32(DTable.Rows[i][0]) == 1 && Convert.ToInt32(DTable.Rows[i][1]) == 0)
                     score++;
             }
-            scores.Add(0, score);
+            //   scores.Add(0, score);
+           scores.Add(Convert.ToInt32(columnNames[0]), score);
+
 
             for (int i = 1; i < columns - 1; i++)
             {
@@ -638,7 +705,7 @@ namespace Projekt_Zaawansowane_Programowanie
                     if (Convert.ToInt32(DTable.Rows[ii][i - 1]) == 0 && Convert.ToInt32(DTable.Rows[ii][i]) == 1 && Convert.ToInt32(DTable.Rows[ii][i + 1]) == 0)
                         score++;
                 }
-                scores.Add(i, score);
+                scores.Add(Convert.ToInt32(columnNames[i]), score);
             }
 
             score = 0;
@@ -647,7 +714,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 if (Convert.ToInt32(DTable.Rows[i][columns - 2]) == 0 && Convert.ToInt32(DTable.Rows[i][columns - 1]) == 1)
                     score++;
             }
-            scores.Add(columns - 1, score);
+            scores.Add(Convert.ToInt32(columnNames[columns - 1]), score);
 
             var helper = from pair in scores
                          orderby pair.Value descending
@@ -655,14 +722,12 @@ namespace Projekt_Zaawansowane_Programowanie
 
             foreach (KeyValuePair<int, int> pair in helper)
             {
-                orderedScores.Add(pair.Key, pair.Value);
                 sortedScores.Add(new Move(pair.Key, pair.Value));
-                Debug.WriteLine("cala lista: " + Convert.ToString(pair.Key) + " : " + Convert.ToString(pair.Value));
-
             }
-
             return sortedScores;
         }
+
+        
         //////////////////////////////////////////////////////////////////////////////////
         //obsługa elementów
         /// /////////////////////////////////////////////////////////////////////////////
@@ -689,9 +754,10 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            // shuffle();
+            shuffle();
             // makeMove();
-            startTabu(10);
+            //startTabu(10);
+            //countProbability();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -707,31 +773,36 @@ namespace Projekt_Zaawansowane_Programowanie
         private void button1_Click_1(object sender, EventArgs e)
         {
             //localSearch(1);
-            LocalSearch ls = new LocalSearch(DTable);
-            ls.Show();
-            this.Visible = false;
+            //LocalSearch ls = new LocalSearch(DTable);
+            //ls.Show();
+            //this.Visible = false;
+            //countProbability();
+            startTabu(20);
         }
-        public class Move{
 
-            int column;
-            int index;
+    } }
 
-            public Move(int _column, int _index)
-            {
-                this.column = _column;
-                this.index = _index;
-            }
+    public class Move
+    {
 
-            public int getColumn()
-            {
-                return column;
-            }
-            public int getIndex()
-            {
-                return index;
-            }
+        int column;
+        int index;
 
+        public Move(int _column, int _index)
+        {
+            this.column = _column;
+            this.index = _index;
         }
+
+        public int getColumn()
+        {
+            return column;
+        }
+        public int getIndex()
+        {
+            return index;
+        }
+
     }
 
-}
+

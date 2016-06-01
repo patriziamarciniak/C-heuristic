@@ -17,3 +17,4 @@ C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowa
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.Properties.Resources.resources
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.GenerateResource.Cache
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.LocalSearch.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.TabuSearch.resources
