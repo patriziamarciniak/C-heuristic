@@ -11,17 +11,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Threading;
+
 
 namespace Projekt_Zaawansowane_Programowanie
 {
     public partial class Form1 : Form
     {
         DataTable DTable = new DataTable();
+        DataTable DTableBest = new DataTable();
         BindingSource SBind = new BindingSource();
-        List<int> pierwsza = new List<int>();
-        List<int> druga = new List<int>();
+      //  FastRandom rnd = new FastRandom();
+        Random rnd = new Random();
+
         Queue<Move> tabuList = new Queue<Move>();
-        int tabuListSize = 10;
+        int tabuListSize = 5;
+        int userLimit = 20;
 
 
         public Form1()
@@ -31,20 +36,6 @@ namespace Projekt_Zaawansowane_Programowanie
 
             SBind.DataSource = DTable; // 1st lvl connection
             dataGridViewInput.DataSource = SBind; // final connection
-
-            /*
-            for (int i = 0; i<5; i++)
-            {
-                if(i < 2)
-                {
-                    Debug.WriteLine(Convert.ToString(i));
-                }else
-                {
-                    i = 10;
-                }
-            }
-            Debug.WriteLine("wyszedlem");
-            */
 
         }
 
@@ -58,14 +49,13 @@ namespace Projekt_Zaawansowane_Programowanie
                 this.comboBoxPlaces.Items.Add(i);
             };
             comboBoxPlaces.SelectedIndex = 9;
-            comboBoxSamples.SelectedIndex = 6;
-            comboBoxErrors.SelectedIndex = 5;
+            comboBoxSamples.SelectedIndex = 9;
+            comboBoxErrors.SelectedIndex = 19;
             comboBoxLevel.SelectedIndex = 1;
-
 
         }
 
-        private void clearTable()
+        public void clearTable(DataTable DTable)
         {
             List<DataRow> rowsToDelete = new List<DataRow>();
             foreach (DataRow row in DTable.Rows)
@@ -82,42 +72,50 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 DTable.Columns.Remove(i.ToString());
             }
+            rowsToDelete.Clear();
 
         }
 
         private void generateEmptyTable(int columns, int rows)
         {
-            Random rnd = new Random();
+            Stopwatch watch = Stopwatch.StartNew();
+            TimeSpan begin = Process.GetCurrentProcess().TotalProcessorTime;
 
+            
             for (int i = 0; i < columns; i++)
             {
                 DTable.Columns.Add(i.ToString());
             }
-
+            
             for (int i = 0; i < rows; i++)
             {
                 DTable.Rows.Add();
             }
 
+            
             for (int i = 0; i < rows; i++)
             {
-                for (int ii = 0; ii < columns; ii++)
+                 for (int ii = 0; ii < columns; ii++)
                 {
                     DTable.Rows[i][ii] = "0";
                 }
             }
+            
 
             foreach (DataGridViewColumn column in dataGridViewInput.Columns)
             {
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
+            watch.Stop();
+            var time = watch.ElapsedMilliseconds;
+            Debug.WriteLine("czas tworzenia i wypełniania DTable watch:" + Convert.ToString(time/1000.00));
+
         }
 
         private void fillTable(String level)
         {
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
-            Random rnd = new Random();
             int seqLength = 0;
             int start;
             int flag;
@@ -156,7 +154,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 for (int ii = start; ii < start + seqLength; ii++)
                 {
                     DTable.Rows[i][ii] = "1";
-                    dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue;
+                    dataGridViewInput.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue; //tu problem
                 }
             }
         }
@@ -168,7 +166,6 @@ namespace Projekt_Zaawansowane_Programowanie
                 MessageBox.Show("Podana liczba błędów, przekracza liczbe komórek.");
                 //dopisać obsługę błędów
             }
-            Random rnd = new Random();
             List<Tuple<int, int>> errorsList = new List<Tuple<int, int>>();
 
             while (errorsList.Count != errors)
@@ -189,7 +186,6 @@ namespace Projekt_Zaawansowane_Programowanie
                     errorsList.Add(new Tuple<int, int>(row, col));
                 }
             }
-
             return errorsList;
         }
 
@@ -216,19 +212,18 @@ namespace Projekt_Zaawansowane_Programowanie
 
         public void shuffle()
         {
-            Random r = new Random();
             for (int i = 0; i < 100; i++)
             {
-                int a = r.Next(0, DTable.Columns.Count);
-                int b = r.Next(0, DTable.Columns.Count);
+                int a = rnd.Next(0, DTable.Columns.Count);
+                int b = rnd.Next(0, DTable.Columns.Count);
                 DTable.Columns[Convert.ToString(a)].SetOrdinal(b);
             }
         }
 
         private void saveToFile()
         {
-            DTable.TableName = "Tablica danych";
-            DTable.WriteXml("instancja.xml");
+            DTableBest.TableName = "Tablica danych";
+            DTableBest.WriteXml("instancja.xml");
             MessageBox.Show("Instancja zapisana do pliku 'bin/debug/instancja.xml'.");
             /*
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -265,6 +260,7 @@ namespace Projekt_Zaawansowane_Programowanie
             */
         }
 
+
         // //////////////////// Maszyneria do liczenia score /////////////
 
 
@@ -277,33 +273,33 @@ namespace Projekt_Zaawansowane_Programowanie
             int[] startSet = new int[2];
             int rows = DTable.Rows.Count;
             int columns = DTable.Columns.Count;
+            
+                        for (int i = 0; i < rows; i++)
+                        {
+                            for (int ii = 0; ii < columns; ii++)
+                            {
+                                row.Add(Convert.ToInt32(DTable.Rows[i][ii]));
+                            }
 
-            for (int i = 0; i < rows; i++)
-            {
-                for (int ii = 0; ii < columns; ii++)
-                {
-                    row.Add(Convert.ToInt32(DTable.Rows[i][ii]));
-                }
-
-                if (row.FindIndex(item => item == 0) == -1 || row.FindIndex(item => item == 1) == -1)
-                {
-                    score = score + 0;
-                }
-                else
-                {
-                    start = row.FindIndex(item => item == 1);
-                    end = row.FindLastIndex(item => item == 1);
-                    subset = row.GetRange(start, end - start + 1);
-                    if (subset.FindIndex(item => item == 0) != -1)
-                    {
-                        startSet = findLongestOneSet(subset);
-                        score = score + countScoreHelper(startSet, subset); // liczenie score
-                    }
-                }
-                row.Clear();
-                subset.Clear();
-            }
-            return score;
+                            if (row.FindIndex(item => item == 0) == -1 || row.FindIndex(item => item == 1) == -1)
+                            {
+                                score = score + 0;
+                            }
+                            else
+                            {
+                                start = row.FindIndex(item => item == 1);
+                                end = row.FindLastIndex(item => item == 1);
+                                subset = row.GetRange(start, end - start + 1);
+                                if (subset.FindIndex(item => item == 0) != -1)
+                                {
+                                    startSet = findLongestOneSet(subset);
+                                    score = score + countScoreHelper(startSet, subset); // liczenie score
+                                }
+                            }
+                            row.Clear();
+                            subset.Clear();
+                        }
+                       return score;
         }
 
         private int countScoreHelper(int[] startSet, List<int> subset)
@@ -463,60 +459,61 @@ namespace Projekt_Zaawansowane_Programowanie
         /// ///////////////////////////
 
  //Tabu//////////////////////////////////////////////////////////////////////////////
-        public void startTabu(int userLimit)
+        public void startTabu()
         {
-            Debug.WriteLine("Wynik na start: " + Convert.ToString(countScore(DTable)));
 
+            Debug.WriteLine("UWAGA START: " + Convert.ToString(countScore(DTable)));
 
-            DataTable DTableBest = new DataTable();
+            clearTable(DTableBest);
             List<Move> sortedScores = new List<Move>();
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
+            
 
             for (int i = 0; i < columns; i++)
             {
-                DTableBest.Columns.Add(i.ToString());
+                     DTableBest.Columns.Add(i.ToString());
             }
+
             for (int i = 0; i < rows; i++)
             {
-                DTableBest.Rows.Add();
+                    DTableBest.Rows.Add();
             }
+            
 
             for (int c = 0; c < rows; c++)
-            {
-                for (int cc = 0; cc < columns; cc++)
                 {
-                    DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
-
+                    for (int cc = 0; cc < columns; cc++)
+                    {
+                        DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
+                    }
                 }
-            }
 
-            int limit = userLimit;
+            int limit = 1;
             int bestScore = countScore(DTable);
+            int startScore = countScore(DTable);
             int score = 0;
-            int bestTurn;
+            List<int> bestTurns = new List<int>();
             int previousScore = 999999999;
             int littleRestart = 20;
-            int limitForBigRestart = (int)limit / 4;
+            //    int limitForBigRestart = (int)limit / 4;
+            int limitForBigRestart = (int)userLimit;
             int bigRestart = limitForBigRestart;
-        //    Debug.WriteLine("Big restart limit  " + Convert.ToString(limitForBigRestart));
+            bestTurns.Add(0);
 
-
-
-            while (limit > 0 && bestScore != 0)
+            while (limit < userLimit + 1 && bestScore != 0)
             {
                 if (littleRestart == 0)
                 {
                     Debug.WriteLine("wykonuje mały restart w turze " + Convert.ToString(limit));
 
-                    Random rand = new Random();
                     for (int i = 0; i < 3; i++)
                     {
-                        DTable.Columns[rand.Next(0, columns)].SetOrdinal(rand.Next(0, columns));
+                        DTable.Columns[rnd.Next(0, columns)].SetOrdinal(rnd.Next(0, columns));
                     }
                     littleRestart = 20;
                 }
-/*
+
                 if (bigRestart == 0)
                 {
                     for (int c = 0; c < rows; c++)
@@ -528,33 +525,29 @@ namespace Projekt_Zaawansowane_Programowanie
                         }
                     }
                     Debug.WriteLine("wykonuje duży restart w turze " + Convert.ToString(limit));
-                 //   tabuList.Clear();
-                 //   foreach(Move tabu in tabuList)
-                 //   {
-                  //      Debug.WriteLine("lista po clear " + Convert.ToString(tabu.getColumn()) + " " + tabu.getIndex());
-
-                 //   }
-
+                    tabuList.Clear();
                     sortedScores = countProbability();
                     for (int i = 0; i < 2; i++)
                     {
-                        //tabuList.Enqueue(sortedScores[i]);
+                        tabuList.Enqueue(sortedScores[i]);
                     }
-                  //  foreach (Move tabu in tabuList)
-                  //  {
-                  //      Debug.WriteLine("lista po dodaniue wartsc " + Convert.ToString(tabu.getColumn()) + " " + tabu.getIndex());
 
-                  //  }
                     bigRestart = limitForBigRestart;
-                    Debug.WriteLine("duży restart się udał");
 
                 }
-*/
+
                 makeMove();
                 previousScore = score;
-
                 score = countScore(DTable);
              //   Debug.WriteLine("previous" + Convert.ToString(previousScore) + "score" + Convert.ToString(score));
+
+                if (previousScore - score > 4 && limit != 1)
+                {
+                    tabuList.Clear();
+                    Debug.WriteLine("znacznie lepszy wynik - czyszcze liste tabu");
+                }
+
+                if (score == bestScore) bestTurns.Add(limit);
 
                 Debug.WriteLine("Wynik:  " + Convert.ToString(score) + " w turze: " + Convert.ToString(limit));
 
@@ -563,6 +556,8 @@ namespace Projekt_Zaawansowane_Programowanie
                     Debug.WriteLine("Uzyskałem lepszy wynik:  " + Convert.ToString(score));
                     bigRestart = limitForBigRestart;
                     bestScore = score;
+                    bestTurns.Clear();
+                    bestTurns.Add(limit);
                     for (int c = 0; c < rows; c++)
                     {
                         for (int cc = 0; cc < columns; cc++)
@@ -573,8 +568,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 }else
                 {
                     bigRestart--;
-                  //  Debug.WriteLine("Zmniejszam big restart  " + Convert.ToString(bigRestart));
-
+                  //  Debug.WriteLine("Zmniejszylem big restart  " + Convert.ToString(bigRestart));
                 }
 
                 if (previousScore == score && previousScore < score)
@@ -585,28 +579,35 @@ namespace Projekt_Zaawansowane_Programowanie
                 {
                     littleRestart = 20;
                 }
-                limit--;
+                limit++;
+
             }
 
-
+            Debug.WriteLine("Wynik start: " + Convert.ToString(startScore));
             Debug.WriteLine("Wynik algorytmu: " + Convert.ToString(bestScore));
 
             for (int c = 0; c < rows; c++)
             {
                 for (int cc = 0; cc < columns; cc++)
                 {
-                 //   Debug.WriteLine(DTableBest.Rows[c][cc]);
+                            DTable.Rows[c][cc] = DTableBest.Rows[c][cc];
+                    //       Debug.WriteLine(DTableBest.Rows[c][cc]);
                 }
             }
+
+            foreach (int i in bestTurns) Debug.WriteLine("Best turns: " + Convert.ToString(i));
 
                 SBind.DataSource = null; // 1st lvl connection
 
                 SBind.DataSource = DTableBest; // 1st lvl connection
                 dataGridViewInput.DataSource = SBind; // final connection
+            tabuList.Clear();
 
 
         }
-
+/// <summary>
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// </summary>
         public void makeMove()
         {
             Dictionary<int, int> scores = new Dictionary<int, int>();
@@ -627,35 +628,33 @@ namespace Projekt_Zaawansowane_Programowanie
                 
                 indexTarget = DTable.Columns[Convert.ToString(sortedScores[i + 1].getColumn())].Ordinal;
 
-                Debug.WriteLine("analizuje ruch" + Convert.ToString(indexToMove) + " na index " + Convert.ToString(indexTarget));
+            //    Debug.WriteLine("analizuje ruch" + Convert.ToString(indexToMove) + " na index " + Convert.ToString(indexTarget));
 
-             //  foreach (Move value in tabuList)
              for (int ii = 0; ii < tabuList.Count; ii++)
                 {
-                    Debug.WriteLine("sprawdzam tabu wiersz " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + " " + tabuList.ElementAt(ii).getIndex());
+             //       Debug.WriteLine("sprawdzam tabu wiersz " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + " " + tabuList.ElementAt(ii).getIndex());
 
-                   // if (value.getColumn() == indexToMove && value.getIndex() == indexTarget)
                    if (tabuList.ElementAt(ii).getColumn() == indexToMove && tabuList.ElementAt(ii).getIndex() == indexTarget)
                     {
                         onTabu = true;
-                        Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + Convert.ToString(tabuList.ElementAt(ii).getIndex()));
+          //              Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + Convert.ToString(tabuList.ElementAt(ii).getIndex()));
                         ii = tabuList.Count;
                     }
                 }
                 if (!onTabu)
                 {
-                    Debug.WriteLine("nie bylo mnie na tabu, wykonuej ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(indexTarget));
+          //          Debug.WriteLine("nie bylo mnie na tabu, wykonuje ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(indexTarget));
                     DTable.Columns[indexToMove].SetOrdinal(indexTarget);
                     addToQueue(tabuList, tabuListSize, new Move(indexToMove, indexTarget));
                     i = sortedScores.Count;
                 }
                 onTabu = false;
             }
-            Debug.WriteLine("wychodze z tabu i wypisuje liste tabu");
+         //   Debug.WriteLine("wychodze z tabu i wypisuje liste tabu");
 
             foreach (Move pair in tabuList)
             {
-                     Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
+        //             Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
             }
 
         }
@@ -735,8 +734,12 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void buttonGenerateInstance_Click(object sender, EventArgs e)
         {
-            clearTable();
+
+            clearTable(DTable);
             generateEmptyTable(int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text));
+            SBind.DataSource = DTable; // 1st lvl connection
+            dataGridViewInput.DataSource = SBind; // final connection
+
             fillTable(comboBoxLevel.Text);
             // shuffle();
         }
@@ -748,16 +751,16 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void button1_Click(object sender, EventArgs e)
         {
-            clearTable();
+            clearTable(DTable);
             generateEmptyTable(int.Parse(comboBoxPlaces.Text), int.Parse(comboBoxSamples.Text));
         }
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
+            Stopwatch stoper = Stopwatch.StartNew();
             shuffle();
-            // makeMove();
-            //startTabu(10);
-            //countProbability();
+            stoper.Stop();
+            Debug.WriteLine("Czas shuffeling: " + Convert.ToString(stoper.ElapsedMilliseconds / 1000.00));
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -772,37 +775,18 @@ namespace Projekt_Zaawansowane_Programowanie
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            //localSearch(1);
-            //LocalSearch ls = new LocalSearch(DTable);
-            //ls.Show();
-            //this.Visible = false;
+
+            LocalSearch ls = new LocalSearch(DTable);
+            ls.Show();
+            this.Visible = false;
             //countProbability();
-            startTabu(20);
+          //  Stopwatch stoper = Stopwatch.StartNew();
+         //   startTabu();
+          //  stoper.Stop();
+          //  Debug.WriteLine("Czas: " + Convert.ToString(stoper.ElapsedMilliseconds / 1000.00));
         }
 
     } }
 
-    public class Move
-    {
-
-        int column;
-        int index;
-
-        public Move(int _column, int _index)
-        {
-            this.column = _column;
-            this.index = _index;
-        }
-
-        public int getColumn()
-        {
-            return column;
-        }
-        public int getIndex()
-        {
-            return index;
-        }
-
-    }
-
+  
 
