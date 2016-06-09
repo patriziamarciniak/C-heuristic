@@ -18,3 +18,17 @@ C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowa
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.GenerateResource.Cache
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.LocalSearch.resources
 C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.TabuSearch.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.ResolveComReference.cache
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C-heuristic\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.TesterLS.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.exe.config
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.ResolveComReference.cache
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.exe
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.pdb
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.exe
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\bin\Debug\Projekt Zaawansowane Programowanie.pdb
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csprojResolveAssemblyReference.cache
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.Form1.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.LocalSearch.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.Properties.Resources.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt_Zaawansowane_Programowanie.TabuSearch.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\C# MIN ERROR MAP\Projekt Zaawansowane Programowanie\obj\Debug\Projekt Zaawansowane Programowanie.csproj.GenerateResource.Cache

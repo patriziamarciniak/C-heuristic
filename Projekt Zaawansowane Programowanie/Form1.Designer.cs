@@ -30,8 +30,8 @@ namespace Projekt_Zaawansowane_Programowanie
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dataGridViewInput = new System.Windows.Forms.DataGridView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -42,7 +42,6 @@ namespace Projekt_Zaawansowane_Programowanie
             this.btnGoLocalSearch = new System.Windows.Forms.Button();
             this.comboBoxLevel = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.btnShuffle = new System.Windows.Forms.Button();
             this.btnUserInstance = new System.Windows.Forms.Button();
             this.buttonGenerateErrors = new System.Windows.Forms.Button();
             this.buttonGenerateInstance = new System.Windows.Forms.Button();
@@ -74,23 +73,23 @@ namespace Projekt_Zaawansowane_Programowanie
             // 
             this.dataGridViewInput.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewInput.BackgroundColor = System.Drawing.SystemColors.ActiveCaptionText;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewInput.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewInput.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridViewInput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewInput.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewInput.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridViewInput.Dock = System.Windows.Forms.DockStyle.Left;
             this.dataGridViewInput.Location = new System.Drawing.Point(0, 24);
             this.dataGridViewInput.Name = "dataGridViewInput";
@@ -138,7 +137,6 @@ namespace Projekt_Zaawansowane_Programowanie
             this.panel2.Controls.Add(this.btnGoLocalSearch);
             this.panel2.Controls.Add(this.comboBoxLevel);
             this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.btnShuffle);
             this.panel2.Controls.Add(this.btnUserInstance);
             this.panel2.Controls.Add(this.buttonGenerateErrors);
             this.panel2.Controls.Add(this.buttonGenerateInstance);
@@ -166,12 +164,12 @@ namespace Projekt_Zaawansowane_Programowanie
             this.btnGoLocalSearch.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnGoLocalSearch.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGoLocalSearch.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnGoLocalSearch.Location = new System.Drawing.Point(20, 514);
+            this.btnGoLocalSearch.Location = new System.Drawing.Point(20, 473);
             this.btnGoLocalSearch.Name = "btnGoLocalSearch";
             this.btnGoLocalSearch.Padding = new System.Windows.Forms.Padding(1);
-            this.btnGoLocalSearch.Size = new System.Drawing.Size(259, 30);
+            this.btnGoLocalSearch.Size = new System.Drawing.Size(259, 63);
             this.btnGoLocalSearch.TabIndex = 12;
-            this.btnGoLocalSearch.Text = "Dalej -> Rozwiązanie początkowe";
+            this.btnGoLocalSearch.Text = "Dalej -> Local Search";
             this.btnGoLocalSearch.UseVisualStyleBackColor = false;
             this.btnGoLocalSearch.Click += new System.EventHandler(this.button1_Click_1);
             // 
@@ -199,25 +197,6 @@ namespace Projekt_Zaawansowane_Programowanie
             this.label3.TabIndex = 10;
             this.label3.Text = "Poziom trudności";
             // 
-            // btnShuffle
-            // 
-            this.btnShuffle.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.btnShuffle.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.btnShuffle.FlatAppearance.BorderColor = System.Drawing.Color.OldLace;
-            this.btnShuffle.FlatAppearance.BorderSize = 5;
-            this.btnShuffle.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.btnShuffle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnShuffle.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnShuffle.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnShuffle.Location = new System.Drawing.Point(85, 408);
-            this.btnShuffle.Name = "btnShuffle";
-            this.btnShuffle.Padding = new System.Windows.Forms.Padding(1);
-            this.btnShuffle.Size = new System.Drawing.Size(148, 62);
-            this.btnShuffle.TabIndex = 9;
-            this.btnShuffle.Text = "Generuj losową kolejność kolumn";
-            this.btnShuffle.UseVisualStyleBackColor = false;
-            this.btnShuffle.Click += new System.EventHandler(this.btnHelp_Click);
-            // 
             // btnUserInstance
             // 
             this.btnUserInstance.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -228,7 +207,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.btnUserInstance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnUserInstance.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnUserInstance.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnUserInstance.Location = new System.Drawing.Point(85, 217);
+            this.btnUserInstance.Location = new System.Drawing.Point(85, 210);
             this.btnUserInstance.Name = "btnUserInstance";
             this.btnUserInstance.Padding = new System.Windows.Forms.Padding(1);
             this.btnUserInstance.Size = new System.Drawing.Size(148, 30);
@@ -247,7 +226,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.buttonGenerateErrors.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGenerateErrors.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonGenerateErrors.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonGenerateErrors.Location = new System.Drawing.Point(85, 334);
+            this.buttonGenerateErrors.Location = new System.Drawing.Point(85, 354);
             this.buttonGenerateErrors.Name = "buttonGenerateErrors";
             this.buttonGenerateErrors.Padding = new System.Windows.Forms.Padding(1);
             this.buttonGenerateErrors.Size = new System.Drawing.Size(148, 30);
@@ -266,7 +245,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.buttonGenerateInstance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGenerateInstance.Font = new System.Drawing.Font("Georgia Pro SemiBold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonGenerateInstance.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonGenerateInstance.Location = new System.Drawing.Point(85, 172);
+            this.buttonGenerateInstance.Location = new System.Drawing.Point(85, 163);
             this.buttonGenerateInstance.Name = "buttonGenerateInstance";
             this.buttonGenerateInstance.Padding = new System.Windows.Forms.Padding(1);
             this.buttonGenerateInstance.Size = new System.Drawing.Size(148, 30);
@@ -291,7 +270,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.label1.AutoSize = true;
             this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.label1.Font = new System.Drawing.Font("Georgia", 10.5F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(82, 272);
+            this.label1.Location = new System.Drawing.Point(52, 312);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(111, 17);
             this.label1.TabIndex = 4;
@@ -311,7 +290,7 @@ namespace Projekt_Zaawansowane_Programowanie
             // comboBoxErrors
             // 
             this.comboBoxErrors.FormattingEnabled = true;
-            this.comboBoxErrors.Location = new System.Drawing.Point(217, 269);
+            this.comboBoxErrors.Location = new System.Drawing.Point(217, 308);
             this.comboBoxErrors.Name = "comboBoxErrors";
             this.comboBoxErrors.Size = new System.Drawing.Size(62, 21);
             this.comboBoxErrors.TabIndex = 2;
@@ -348,7 +327,7 @@ namespace Projekt_Zaawansowane_Programowanie
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Consecutive One Tabu Search";
+            this.Text = "MIN ERROR MAP";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).EndInit();
@@ -374,7 +353,6 @@ namespace Projekt_Zaawansowane_Programowanie
         private System.Windows.Forms.Button buttonGenerateInstance;
         private System.Windows.Forms.Button buttonGenerateErrors;
         private System.Windows.Forms.Button btnUserInstance;
-        private System.Windows.Forms.Button btnShuffle;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox comboBoxLevel;
         private System.Windows.Forms.MenuStrip menuStrip1;

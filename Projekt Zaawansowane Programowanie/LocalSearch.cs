@@ -13,10 +13,16 @@ namespace Projekt_Zaawansowane_Programowanie
 {
     public partial class LocalSearch : Form
     {
-        DataTable DTableBase, DTableOutput, DTableActual; //nowa tebelka danych
+        DataTable DTableBase;
+        DataTable DTableActual = new DataTable();
+        DataTable DTableOutput = new DataTable();
         BindingSource SBind = new BindingSource();
         Form1 form = new Form1();
         int rows, columns;
+        Random r = new Random();
+        bool flag = false;
+
+
 
         public LocalSearch(DataTable table)
         {
@@ -24,26 +30,22 @@ namespace Projekt_Zaawansowane_Programowanie
             DTableBase = table;
             rows = DTableBase.Rows.Count;
             columns = DTableBase.Columns.Count;
-            DTableActual = new DataTable();
-            DTableOutput = new DataTable();
+            SBind.DataSource = DTableBase;
+            dataGridViewLocalSearch.DataSource = SBind;
             fillComponents();
         }
 
-        //   SBind.DataSource = DTable; // 1st lvl connection
-        //   dataGridViewLocalSearch.DataSource = SBind; // final connection
-
-
-
         private void fillComponents()
         {
+            textBoxStartScore.Text = Convert.ToString(countScore(DTableBase));
+
             for (int i = 1; i <= 100; i++)
             {
                 this.comboBoxTurns.Items.Add(i);
                 this.comboBoxRestarts.Items.Add(i);
             }
-
-            comboBoxTurns.SelectedIndex = 1;
-            comboBoxRestarts.SelectedIndex = 1;
+            comboBoxTurns.SelectedIndex = 2;
+            comboBoxRestarts.SelectedIndex = 0;
 
             for (int i = 0; i < columns; i++)
             {
@@ -56,7 +58,10 @@ namespace Projekt_Zaawansowane_Programowanie
                 DTableOutput.Rows.Add();
             }
 
-
+            foreach (DataGridViewColumn column in dataGridViewLocalSearch.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
         }
 
         private int countScore(DataTable DTable)
@@ -106,7 +111,6 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 helpSubset = subset.GetRange(0, startSet[0]);
                 maxScore = counter(helpSubset);
-                // Debug.WriteLine("wynik lewej: " + Convert.ToString(countLeftScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
                 scoreLeft = countLeftScore(helpSubset, 0, maxScore);
             }
 
@@ -114,7 +118,6 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 helpSubset = subset.GetRange(startSet[1] + 1, subset.Count - startSet[1] - 1);
                 maxScore = counter(helpSubset);
-                // Debug.WriteLine("wynik prawej: " + Convert.ToString(countRightScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
                 scoreRight = countRightScore(helpSubset, 0, maxScore);
             }
             return scoreLeft + scoreRight;
@@ -214,9 +217,8 @@ namespace Projekt_Zaawansowane_Programowanie
                 subsetList.Add(new Tuple<int, int>(oneSetStart, oneSetFinish - 1));
 
                 int sizeOneSet = oneSetFinish - i;
-                ////////////////// tu jest coś nie tak
-                helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); // help z zerami na poczatku
-                int helpFirstOne = helpSubset.FindIndex(item => item == 1);              // index pierwszej 1
+                helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); 
+                int helpFirstOne = helpSubset.FindIndex(item => item == 1);            
                 int sizeZeroSet = helpSubset.Count - (helpSubset.Count - helpFirstOne);
                 i = i + sizeOneSet + sizeZeroSet;
 
@@ -246,14 +248,12 @@ namespace Projekt_Zaawansowane_Programowanie
                     longestSubset[1] = ii.Item2;
                 }
             }
-            //Debug.WriteLine("najdluzszy ciag: " + Convert.ToString(len) + "wspolrzedne: " + Convert.ToString(longestSubset[0]) + " " + Convert.ToString(longestSubset[1]));
             return longestSubset;
         }
 
 
         private int localSearch(DataTable DTable, int turns)
         {
-            Random r = new Random();
             int bestScore = countScore(DTableBase);
             Debug.WriteLine(" start local search with score : " + Convert.ToString(bestScore));
             int oldIndex, newIndex, column, moves;
@@ -261,11 +261,10 @@ namespace Projekt_Zaawansowane_Programowanie
 
             for (int i = 0; i < turns; i++)
             {
-                Debug.WriteLine("Tura nr:" + Convert.ToString(i));
                 moves = 0;
                 while (newScore >= bestScore)
                 {
-                    if (bestScore == 0 || moves > 100)
+                    if (bestScore == 0 || moves > 1000)
                     {
                         break;
                     }
@@ -286,12 +285,10 @@ namespace Projekt_Zaawansowane_Programowanie
                         else
                         {
                             bestScore = newScore;
-                            Debug.WriteLine("Lepszy score przypisuje i wychodze" + Convert.ToString(bestScore));
                             break;
                         }
 
                     }
-                //    Debug.WriteLine("new best score" + Convert.ToString(bestScore) + "after moves:" + Convert.ToString(moves));
                 }
             }
             return bestScore;
@@ -303,20 +300,13 @@ namespace Projekt_Zaawansowane_Programowanie
             int score;
 
             for (int i = 0; i < restarts; i++)
-            {
-                Debug.WriteLine("Restart nr:" + Convert.ToString(i));
-
-                
+            {            
                 for (int c = 0; c < rows; c++)
                 {
                     for (int cc = 0; cc < columns; cc++)
-                    {
                         DTableActual.Rows[c][cc] = DTableBase.Rows[c][cc];
-                    }
                 }
-
                 score = localSearch(DTableActual, turns);
-                Debug.WriteLine("Wynik restartu nr: " + Convert.ToString(i)+ " : " + Convert.ToString(score));
 
                 if (score < bestScore)
                 {
@@ -324,39 +314,42 @@ namespace Projekt_Zaawansowane_Programowanie
                     for (int c = 0; c < rows; c++)
                     {
                         for (int cc = 0; cc < columns; cc++)
-                        {
                            DTableOutput.Rows[c][cc] = DTableActual.Rows[c][cc];
-                        }
                     }
                 }
             }
-            Debug.WriteLine("Best score ze wszystkich restartów: " + Convert.ToString(bestScore));
             return bestScore;
         }
-
 
 
         //////////////////////Obsługa elementów///////////////////////////////////////////
 
         private void buttonGenerateInstance_Click(object sender, EventArgs e)
         {
+            Stopwatch watch = Stopwatch.StartNew();
             int score = MultiStartLocalSearch(int.Parse(comboBoxRestarts.Text), int.Parse(comboBoxTurns.Text));
+            watch.Stop();
+            var time = watch.ElapsedMilliseconds;
+            czas.Text = Convert.ToString(time/1000.00);
+
             textBoxLocalSearchScore.Text = Convert.ToString(score);
-
-            SBind.DataSource = DTableOutput; // 1st lvl connection
-            dataGridViewLocalSearch.DataSource = SBind; // final connection
-
-            foreach (DataGridViewColumn column in dataGridViewLocalSearch.Columns)
-            {
-                column.SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
-
+            SBind.DataSource = DTableOutput; 
+            dataGridViewLocalSearch.DataSource = SBind;
+            flag = true;
         }
 
         private void buttonTabuSearch_Click(object sender, EventArgs e)
         {
-            TabuSearch ts = new TabuSearch(DTableOutput);
-            ts.Show();
+            if (flag)
+            {
+              TabuSearch ts = new TabuSearch(DTableOutput);
+              ts.Show();
+            }
+            else
+            {
+               TabuSearch ts = new TabuSearch(DTableBase);
+               ts.Show();
+            }
             this.Visible = false;
         }
     }

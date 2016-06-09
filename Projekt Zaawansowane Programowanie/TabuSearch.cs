@@ -8,22 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace Projekt_Zaawansowane_Programowanie
 {
     public partial class TabuSearch : Form
     {
-        int bestScore, columns, rows;
+        int columns, rows;
         DataTable DTable = new DataTable();
         DataTable DTableBest = new DataTable();
         BindingSource SBind = new BindingSource();
-        //  FastRandom rnd = new FastRandom();
         Random rnd = new Random();
         Form1 form1 = new Form1();
-
         Queue<Move> tabuList = new Queue<Move>();
-        int tabuListSize = 5;
-        int userLimit = 20;
 
         public TabuSearch(DataTable table)
         {
@@ -31,6 +28,46 @@ namespace Projekt_Zaawansowane_Programowanie
             DTable = table;
             rows = DTable.Rows.Count;
             columns = DTable.Columns.Count;
+            fillComponents();
+        }
+
+        private void fillComponents()
+        {
+            txtStartScore.Text = Convert.ToString(countScore(DTable));
+
+          for (int i = 1; i <= 100; i++)
+                this.comboBoxLittleReset.Items.Add(i);
+
+            for (int i = 100; i <= 10000; i = i + 100)
+                this.comboBoxTabuSteps.Items.Add(i);
+
+            for (double i = 0.5; i < 10.5; i = i + 0.5)
+                this.comboBoxTabuSize.Items.Add(columns * i);
+
+            for (int i = 10; i < 2010; i = i + 10)
+            {
+                this.comboBoxBigReset.Items.Add(i);
+            }
+            comboBoxLittleReset.SelectedIndex = 49;
+            comboBoxTabuSize.SelectedIndex = 1;
+            comboBoxTabuSteps.SelectedIndex = 9;
+            comboBoxBigReset.SelectedIndex = 49;
+            txtStartScore.Text = Convert.ToString(countScore(DTable));
+
+
+            for (int i = 0; i < columns; i++)
+            {
+                DTableBest.Columns.Add(i.ToString());
+            }
+            for (int i = 0; i < rows; i++)
+            {
+                DTableBest.Rows.Add();
+            }
+
+            foreach (DataGridViewColumn column in dataGridViewResult.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
         }
 
         // //////////////////// Maszyneria do liczenia score /////////////
@@ -85,7 +122,6 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 helpSubset = subset.GetRange(0, startSet[0]);
                 maxScore = counter(helpSubset);
-                // Debug.WriteLine("wynik lewej: " + Convert.ToString(countLeftScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
                 scoreLeft = countLeftScore(helpSubset, 0, maxScore);
             }
 
@@ -93,7 +129,6 @@ namespace Projekt_Zaawansowane_Programowanie
             {
                 helpSubset = subset.GetRange(startSet[1] + 1, subset.Count - startSet[1] - 1);
                 maxScore = counter(helpSubset);
-                // Debug.WriteLine("wynik prawej: " + Convert.ToString(countRightScore(helpSubset, 0, maxScore) + "/////////////////////////////"));
                 scoreRight = countRightScore(helpSubset, 0, maxScore);
             }
             return scoreLeft + scoreRight;
@@ -193,8 +228,8 @@ namespace Projekt_Zaawansowane_Programowanie
                 subsetList.Add(new Tuple<int, int>(oneSetStart, oneSetFinish - 1));
 
                 int sizeOneSet = oneSetFinish - i;
-                helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); // help z zerami na poczatku
-                int helpFirstOne = helpSubset.FindIndex(item => item == 1);              // index pierwszej 1
+                helpSubset = subset.GetRange(oneSetFinish, subset.Count - oneSetFinish); 
+                int helpFirstOne = helpSubset.FindIndex(item => item == 1);              
                 int sizeZeroSet = helpSubset.Count - (helpSubset.Count - helpFirstOne);
                 i = i + sizeOneSet + sizeZeroSet;
 
@@ -224,217 +259,176 @@ namespace Projekt_Zaawansowane_Programowanie
                     longestSubset[1] = ii.Item2;
                 }
             }
-            //Debug.WriteLine("najdluzszy ciag: " + Convert.ToString(len) + "wspolrzedne: " + Convert.ToString(longestSubset[0]) + " " + Convert.ToString(longestSubset[1]));
             return longestSubset;
         }
 
-        /// ///////////////////////////
 
         //Tabu//////////////////////////////////////////////////////////////////////////////
-        public void startTabu()
+
+        public void startTabu(int userLimit, int tabuListSize, int littleRestart, int bigRestart)
         {
+            Stopwatch watch = Stopwatch.StartNew();
 
-            Debug.WriteLine("UWAGA START: " + Convert.ToString(countScore(DTable)));
-
-            form1.clearTable(DTableBest);
             List<Move> sortedScores = new List<Move>();
             int columns = DTable.Columns.Count;
             int rows = DTable.Rows.Count;
 
-
-            for (int i = 0; i < columns; i++)
-            {
-                DTableBest.Columns.Add(i.ToString());
-            }
-
-            for (int i = 0; i < rows; i++)
-            {
-                DTableBest.Rows.Add();
-            }
-
-
             for (int c = 0; c < rows; c++)
             {
                 for (int cc = 0; cc < columns; cc++)
-                {
-                    DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
-                }
+                { DTableBest.Rows[c][cc] = DTable.Rows[c][cc]; }
             }
 
             int limit = 1;
             int bestScore = countScore(DTable);
             int startScore = countScore(DTable);
             int score = 0;
-            List<int> bestTurns = new List<int>();
+            List<int> scoresOnSteps = new List<int>();
             int previousScore = 999999999;
-            int littleRestart = 20;
-            //    int limitForBigRestart = (int)limit / 4;
-            int limitForBigRestart = (int)userLimit;
-            int bigRestart = limitForBigRestart;
-            bestTurns.Add(0);
+            int limitForBigRestart = bigRestart;
+            int countLittleRestart = 0;
+            int countBigRestart = 0;
+            int limitForLittleRestart = littleRestart;
+            int bestScoreInTurn = 0;
 
             while (limit < userLimit + 1 && bestScore != 0)
             {
                 if (littleRestart == 0)
                 {
-                    Debug.WriteLine("wykonuje mały restart w turze " + Convert.ToString(limit));
-
+                    countLittleRestart++;
                     for (int i = 0; i < 3; i++)
                     {
                         DTable.Columns[rnd.Next(0, columns)].SetOrdinal(rnd.Next(0, columns));
                     }
-                    littleRestart = 20;
+                    littleRestart = limitForLittleRestart;
                 }
 
                 if (bigRestart == 0)
                 {
+                    countBigRestart++;
                     for (int c = 0; c < rows; c++)
                     {
                         for (int cc = 0; cc < columns; cc++)
                         {
                             DTable.Rows[c][cc] = DTableBest.Rows[c][cc];
-
                         }
                     }
-                    Debug.WriteLine("wykonuje duży restart w turze " + Convert.ToString(limit));
                     tabuList.Clear();
                     sortedScores = countProbability();
                     for (int i = 0; i < 2; i++)
                     {
                         tabuList.Enqueue(sortedScores[i]);
                     }
-
                     bigRestart = limitForBigRestart;
-
+                    littleRestart = limitForLittleRestart;
                 }
 
-                makeMove();
+                makeMove(tabuListSize);
                 previousScore = score;
                 score = countScore(DTable);
-                //   Debug.WriteLine("previous" + Convert.ToString(previousScore) + "score" + Convert.ToString(score));
-
-                if (previousScore - score > 4 && limit != 1)
-                {
-                    tabuList.Clear();
-                    Debug.WriteLine("znacznie lepszy wynik - czyszcze liste tabu");
-                }
-
-                if (score == bestScore) bestTurns.Add(limit);
-
-                Debug.WriteLine("Wynik:  " + Convert.ToString(score) + " w turze: " + Convert.ToString(limit));
-
+ 
                 if (score < bestScore)
                 {
-                    Debug.WriteLine("Uzyskałem lepszy wynik:  " + Convert.ToString(score));
                     bigRestart = limitForBigRestart;
                     bestScore = score;
-                    bestTurns.Clear();
-                    bestTurns.Add(limit);
+                    bestScoreInTurn = limit;
+
                     for (int c = 0; c < rows; c++)
                     {
                         for (int cc = 0; cc < columns; cc++)
-                        {
-                            DTableBest.Rows[c][cc] = DTable.Rows[c][cc];
-                        }
+                        { DTableBest.Rows[c][cc] = DTable.Rows[c][cc]; }
                     }
                 }
                 else
-                {
-                    bigRestart--;
-                    //  Debug.WriteLine("Zmniejszylem big restart  " + Convert.ToString(bigRestart));
-                }
+                { bigRestart--; }
 
-                if (previousScore == score && previousScore < score)
+                if (previousScore == score || previousScore < score)
                 {
                     littleRestart--;
                 }
                 else
                 {
-                    littleRestart = 20;
+                    littleRestart = limitForLittleRestart;
                 }
                 limit++;
 
+                if (limit % 100 == 0)
+                {
+                    scoresOnSteps.Add(bestScore);
+                }
+
+                textBoxActualStep.Text = Convert.ToString(limit);
+
+                if (limit == 500)
+                {
+                    watch.Stop();
+                    var time = watch.ElapsedMilliseconds;
+                }
+
             }
 
-            Debug.WriteLine("Wynik start: " + Convert.ToString(startScore));
-            Debug.WriteLine("Wynik algorytmu: " + Convert.ToString(bestScore));
+            textBoxResult.Text = Convert.ToString(bestScore);
+            textBoxPercent.Text = Convert.ToString(100-(bestScore*100/startScore));
 
             for (int c = 0; c < rows; c++)
             {
                 for (int cc = 0; cc < columns; cc++)
-                {
-                    DTable.Rows[c][cc] = DTableBest.Rows[c][cc];
-                    //       Debug.WriteLine(DTableBest.Rows[c][cc]);
-                }
+                { DTable.Rows[c][cc] = DTableBest.Rows[c][cc]; }
             }
-
-            foreach (int i in bestTurns) Debug.WriteLine("Best turns: " + Convert.ToString(i));
-
-            SBind.DataSource = null; // 1st lvl connection
-
-            SBind.DataSource = DTableBest; // 1st lvl connection
-            dataGridViewTabu.DataSource = SBind; // final connection
             tabuList.Clear();
 
+        }
+
+        private void readFile()
+        {
+
+            OpenFileDialog openFileInput = new OpenFileDialog();
+
+            if (openFileInput.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.StreamReader sr = new
+                System.IO.StreamReader(openFileInput.FileName);
+                XmlReader xmlFile = XmlReader.Create(sr, new XmlReaderSettings());
+                DataSet data = new DataSet();
+                data.ReadXml(xmlFile);
+                xmlFile.Close();
+                DTable = data.Tables[0];
+                sr.Close();
+            }
+            txtStartScore.Text = Convert.ToString(countScore(DTable));
 
         }
-        /// <summary>
-        /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// </summary>
-        public void makeMove()
+
+        public void makeMove(int tabuListSize)
         {
             Dictionary<int, int> scores = new Dictionary<int, int>();
             List<Move> sortedScores = new List<Move>();
             bool onTabu = false;
-            bool flag = true;
             int indexToMove, indexTarget;
-
-
-            //  Queue<Move> tabuList = new Queue<Move>();
-            //     int tabuListSize = 10;
 
             sortedScores = countProbability();
 
             for (int i = 0; i < sortedScores.Count - 1; i++)
             {
                 indexToMove = sortedScores[i].getColumn();
-
                 indexTarget = DTable.Columns[Convert.ToString(sortedScores[i + 1].getColumn())].Ordinal;
-
-                //    Debug.WriteLine("analizuje ruch" + Convert.ToString(indexToMove) + " na index " + Convert.ToString(indexTarget));
 
                 for (int ii = 0; ii < tabuList.Count; ii++)
                 {
-                    //       Debug.WriteLine("sprawdzam tabu wiersz " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + " " + tabuList.ElementAt(ii).getIndex());
-
                     if (tabuList.ElementAt(ii).getColumn() == indexToMove && tabuList.ElementAt(ii).getIndex() == indexTarget)
                     {
                         onTabu = true;
-                        //              Debug.WriteLine("jestem na liście tabu: " + Convert.ToString(tabuList.ElementAt(ii).getColumn()) + Convert.ToString(tabuList.ElementAt(ii).getIndex()));
                         ii = tabuList.Count;
                     }
                 }
                 if (!onTabu)
                 {
-                    //          Debug.WriteLine("nie bylo mnie na tabu, wykonuje ruch: " + Convert.ToString(sortedScores[i].getColumn()) + Convert.ToString(indexTarget));
                     DTable.Columns[indexToMove].SetOrdinal(indexTarget);
                     addToQueue(tabuList, tabuListSize, new Move(indexToMove, indexTarget));
                     i = sortedScores.Count;
                 }
                 onTabu = false;
             }
-            //   Debug.WriteLine("wychodze z tabu i wypisuje liste tabu");
-
-            foreach (Move pair in tabuList)
-            {
-                //             Debug.WriteLine("tabu list: " + Convert.ToString(pair.getColumn()) + " : " + Convert.ToString(pair.getIndex()));
-            }
-
-        }
-
-        private void buttonStartTS_Click(object sender, EventArgs e)
-        {
-            startTabu();
         }
 
         public void addToQueue(Queue<Move> tabuList, int limit, Move move)
@@ -468,9 +462,7 @@ namespace Projekt_Zaawansowane_Programowanie
                 if (Convert.ToInt32(DTable.Rows[i][0]) == 1 && Convert.ToInt32(DTable.Rows[i][1]) == 0)
                     score++;
             }
-            //   scores.Add(0, score);
             scores.Add(Convert.ToInt32(columnNames[0]), score);
-
 
             for (int i = 1; i < columns - 1; i++)
             {
@@ -504,6 +496,37 @@ namespace Projekt_Zaawansowane_Programowanie
             return sortedScores;
         }
 
+        
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            form1.saveToFile(DTable);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            readFile();
+        }
+
+        private void buttonStartTS_Click(object sender, EventArgs e)
+        {
+            startTabu(int.Parse(comboBoxTabuSteps.Text), int.Parse(comboBoxTabuSize.Text), int.Parse(comboBoxLittleReset.Text), int.Parse(comboBoxBigReset.Text));
+
+            SBind.DataSource = DTable;
+            dataGridViewResult.DataSource = SBind;
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int ii = 0; ii < columns; ii++)
+                {
+                    if (Convert.ToString(DTable.Rows[i][ii]) == "1")
+                    {
+                        dataGridViewResult.Rows[i].Cells[ii].Style.BackColor = Color.DeepSkyBlue;
+                    }
+                }
+            }
+
+        }
     }
 }
 
